@@ -2,14 +2,16 @@
 # Play all the URLs found on a playlist file using mpv + yt-dlp.
 
 PLAYLIST=$HOME/.playlist
-if [ -z "$(cat $PLAYLIST)" ]
+if [ -z "$(cat $PLAYLIST)" ];
 then
   dunstify -t 2000 -u normal "PLAYLIST IS EMPTY" -h string:fgcolor:#E60012 -h string:bgcolor:#000000 -h string:frcolor:#E60012 
 else
   for url in $(cat $PLAYLIST)
   do
-    mpv $url
-    sed -i "\|$url|d" $PLAYLIST
+    if [! mpv $url ]; then
+      dunstify -t 2000 -u normal "ERROR" " Failed to read $url" -h string:fgcolor:#E60012 -h string:bgcolor:#000000 -h string:frcolor:#E60012
+    fi
+      sed -i "\|$url|d" $PLAYLIST
   done
 fi
 
