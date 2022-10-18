@@ -6,13 +6,10 @@ PRIMARY="$(xclip -o)"
 
 if transmission-remote -a $SELECTION -w ~/Torrents;
   then
-    (echo | dzen2 -bg green -p 3 -w '304' -x 808 -y 523 -h 54) |
-    (sleep 0.05 ; echo "Torrent successfully added." | dzen2 -bg black -fg green -p 3 -w '300' -x 810 -y 525 -h 50 -fn Terminus)
+    dunstify -t 2000 -u normal "TORRENT SUCCESSFULLY ADDED" "$URL" -h string:fgcolor:#26ED49 -h string:bgcolor:#000000 -h string:frcolor:#26ED49
       elif transmission-remote -a  $PRIMARY -w ~/Torrents;
         then
-          (echo | dzen2 -bg green -p 3 -w '304' -x 808 -y 523 -h 54) |
-          (sleep 0.05 ; echo "Torrent successfully added." | dzen2 -bg black -fg green -p 3 -w '300' -x 810 -y 525 -h 50 -fn Terminus)
+          dunstify -t 2000 -u normal "TORRENT SUCCESSFULLY ADDED" "$URL" -h string:fgcolor:#26ED49 -h string:bgcolor:#000000 -h string:frcolor:#26ED49
         else
-          (echo | dzen2 -bg red -p 3 -w '324' -x 808 -y 523 -h 54) |
-          (sleep 0.05 ; echo "ERROR : No torrents found on clipboard." | dzen2 -bg black -fg red -p 3 -w '320' -x 810 -y 525 -h 50 -fn Terminus)
+          dunstify -t 2000 -u normal "ERROR" "No magnet links found on clipboard." -h string:fgcolor:#E60012 -h string:bgcolor:#000000 -h string:frcolor:#E60012 
 fi
