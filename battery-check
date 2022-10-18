@@ -1,0 +1,10 @@
+#!/bin/bash
+# Prints the battery level when under >20%
+
+battery_level=`acpi -b | grep -Po '[0-9]+(?=%)' | awk '{ sum += $1 }; END {print sum}'`
+if [ $battery_level -le 20 ]
+  then
+    export DISPLAY=':0'
+    (echo | dzen2 -bg yellow -p 5 -w '304' -x 808 -y 523 -h 54) |
+    (sleep 0.05 ; echo "BATTERY LOW ! $battery_level% remaining." | dzen2 -bg red -fg yellow -p 5 -w '300' -x 810 -y 525 -h 50 -fn Terminus)
+  fi

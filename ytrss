@@ -1,0 +1,6 @@
+#!/bin/sh
+# Convert Youtube channel custom name to an ID for including into an RSS.
+# Usage: $ ytrss LINK
+
+curl -s $1 | sed -n 's/.*title="RSS"\s\+href="\([^"]\+\).*/\1/p'
+

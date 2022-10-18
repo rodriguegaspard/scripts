@@ -1,0 +1,26 @@
+#!/bin/bash
+# Checks if valid URLs exists in either the system clipboard or in the selection clipboard, and adds them to a playlist.
+
+PLAYLIST=$HOME/.playlist
+REGEX='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
+
+if [[ -z "$(xclip -o -sel clip)" || ! "$(xclip -o -sel clip)" =~ $REGEX ]]
+then
+  if [[ -z "$(xclip -o)" || ! "$(xclip -o)" =~ $REGEX ]]
+  then
+    (sleep 0.05 ; echo "ERROR : no URLs found on clipboard." | dzen2 -bg black -fg red -p 3 -w '300' -x 810 -y 525 -h 50 -fn Terminus) | (echo | dzen2 -bg red -p 3 -w '304' -x 808 -y 523 -h 54)
+    exit
+  else
+    URL="$(xclip -o)"
+  fi
+else
+  URL="$(xclip -o -sel clip)"
+fi
+
+if [ -z "$(grep $URL $PLAYLIST)" ]
+then
+  echo $URL >> $PLAYLIST
+  (sleep 0.05 ; echo "Video added to playlist : $URL" | dzen2 -bg black -fg green -p 3 -w '600' -x 810 -y 525 -h 50 -fn Terminus) | (echo | dzen2 -bg green -p 3 -w '604' -x 808 -y 523 -h 54)
+else
+  (sleep 0.05 ; echo "ERROR : URL already in playlist." | dzen2 -bg black -fg red -p 3 -w '300' -x 810 -y 525 -h 50 -fn Terminus) | (echo | dzen2 -bg red -p 3 -w '304' -x 808 -y 523 -h 54)
+fi

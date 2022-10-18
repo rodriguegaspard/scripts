@@ -1,0 +1,5 @@
+#!/bin/bash
+# A simple alias for signal-desktop,that can be used with dmenu.
+
+signal-desktop
+

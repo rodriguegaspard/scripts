@@ -1,0 +1,18 @@
+#!/bin/bash
+# Checks if a magnet exists in the clipboard and adds it to transmission-remote
+
+SELECTION="$(xclip -o -selection clipboard)"
+PRIMARY="$(xclip -o)"
+
+if transmission-remote -a $SELECTION -w ~/Torrents;
+  then
+    (echo | dzen2 -bg green -p 3 -w '304' -x 808 -y 523 -h 54) |
+    (sleep 0.05 ; echo "Torrent successfully added." | dzen2 -bg black -fg green -p 3 -w '300' -x 810 -y 525 -h 50 -fn Terminus)
+      elif transmission-remote -a  $PRIMARY -w ~/Torrents;
+        then
+          (echo | dzen2 -bg green -p 3 -w '304' -x 808 -y 523 -h 54) |
+          (sleep 0.05 ; echo "Torrent successfully added." | dzen2 -bg black -fg green -p 3 -w '300' -x 810 -y 525 -h 50 -fn Terminus)
+        else
+          (echo | dzen2 -bg red -p 3 -w '324' -x 808 -y 523 -h 54) |
+          (sleep 0.05 ; echo "ERROR : No torrents found on clipboard." | dzen2 -bg black -fg red -p 3 -w '320' -x 810 -y 525 -h 50 -fn Terminus)
+fi

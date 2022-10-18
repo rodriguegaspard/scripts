@@ -1,0 +1,13 @@
+#!/bin/bash
+#Toggles the touchpad
+
+TOGGLE=$HOME/.touchpad
+if [ ! -e $TOGGLE ]; then
+  touch $TOGGLE
+  xinput disable "SynPS/2 Synaptics TouchPad"
+else
+  rm $TOGGLE
+  xinput enable "SynPS/2 Synaptics TouchPad"
+fi
+
+

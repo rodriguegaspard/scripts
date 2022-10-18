@@ -1,0 +1,15 @@
+# !/bin/bash
+# Switches between us and us-qwerty
+
+TOGGLE=$HOME/.keyboard
+if [ ! -e $TOGGLE ]; then
+  touch $TOGGLE
+  setxkbmap us
+  echo "Switched to default US keymay."
+else
+  rm $TOGGLE
+  setxkbmap us_qwerty-fr
+  echo "Switched to US-FR keymap."
+fi
+
+
