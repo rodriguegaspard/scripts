@@ -4,7 +4,7 @@
 PLAYLIST=$HOME/.playlist
 if [ -z "$(cat $PLAYLIST)" ]
 then
-  (sleep 0.05 ; echo "ERROR : Playlist is empty." | dzen2 -bg black -fg red -p 3 -w '300' -x 810 -y 525 -h 50 -fn Terminus) | (echo | dzen2 -bg red -p 3 -w '304' -x 808 -y 523 -h 54)
+  dunstify -t 2000 -u normal "PLAYLIST IS EMPTY" -h string:fgcolor:#E60012 -h string:bgcolor:#000000 -h string:frcolor:#E60012 
 else
   for url in $(cat $PLAYLIST)
   do
