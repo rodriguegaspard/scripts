@@ -8,7 +8,8 @@ then
 else
   for url in $(cat $PLAYLIST)
   do
-    if [! mpv $url ]; then
+    mpv $url
+    if [ $? -ne 0 ]; then
       dunstify -t 2000 -u normal "ERROR" " Failed to read $url" -h string:fgcolor:#E60012 -h string:bgcolor:#000000 -h string:frcolor:#E60012
     fi
       sed -i "\|$url|d" $PLAYLIST
