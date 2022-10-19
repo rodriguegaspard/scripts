@@ -1,7 +1,7 @@
 #!/bin/bash
 #Pomodoro timer using dunst notifications
 
-CYCLES=1
+CYCLES=0
 WORK=1
 
   while [ $CYCLES -lt 5 ]
@@ -15,7 +15,6 @@ WORK=1
         sleep 30;
       done
       ((WORK=1))
-      ((CYCLES++))
     else
       # 25 minutes worktime
       aplay /home/rosco/Scripts/bash_scripts/notification_sound.wav &
@@ -25,6 +24,7 @@ WORK=1
         sleep 150;
       done
       ((WORK=0))
+      ((CYCLES++))
     fi
   done
  dunstify -t 2000 -u normal "WORK IS DONE!" -h string:x-dunst-stack-tag:pomodoro -h string:fgcolor:#26ED49 -h string:bgcolor:#000000 -h string:frcolor:#26ED49 -h int:value:$i
