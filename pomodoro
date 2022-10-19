@@ -12,7 +12,7 @@ WORK=1
       for i in {1..100}; 
       do
         dunstify -t 0 -u normal "BREAK" -h string:x-dunst-stack-tag:pomodoro -h string:fgcolor:#fe4eda -h string:bgcolor:#000000 -h string:frcolor:#fe4eda -h int:value:$i
-        sleep 0.030;
+        sleep 30;
       done
       ((WORK=1))
     else
@@ -21,7 +21,7 @@ WORK=1
       for i in {1..100};
       do
         dunstify -t 0 -u normal "WORK" -h string:x-dunst-stack-tag:pomodoro -h string:fgcolor:#0038a8 -h string:bgcolor:#000000 -h string:frcolor:#0038a8 -h int:value:$i
-        sleep 0.0150;
+        sleep 150;
       done
       ((WORK=0))
       ((CYCLES++))
