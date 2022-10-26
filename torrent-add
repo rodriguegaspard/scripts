@@ -4,10 +4,10 @@
 SELECTION="$(xclip -o -selection clipboard)"
 PRIMARY="$(xclip -o)"
 
-if transmission-remote -a $SELECTION -w ~/Torrents;
+if transmission-remote -a $SELECTION;
   then
     dunstify -t 2000 -u normal "TORRENT SUCCESSFULLY ADDED" "$URL" -h string:fgcolor:#26ED49 -h string:bgcolor:#000000 -h string:frcolor:#26ED49
-      elif transmission-remote -a  $PRIMARY -w ~/Torrents;
+      elif transmission-remote -a  $PRIMARY;
         then
           dunstify -t 2000 -u normal "TORRENT SUCCESSFULLY ADDED" "$URL" -h string:fgcolor:#26ED49 -h string:bgcolor:#000000 -h string:frcolor:#26ED49
         else
