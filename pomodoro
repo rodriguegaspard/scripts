@@ -8,7 +8,6 @@ WORK=1
   do
     if [ $WORK = 0 ]; then
       # 5 minutes break
-      aplay /home/rosco/Scripts/bash_scripts/notification_sound.wav &
       for i in {1..100}; 
       do
         dunstify -t 0 -u normal "BREAK" -h string:x-dunst-stack-tag:pomodoro -h string:fgcolor:#fe4eda -h string:bgcolor:#000000 -h string:frcolor:#fe4eda -h int:value:$i
@@ -17,7 +16,6 @@ WORK=1
       ((WORK=1))
     else
       # 25 minutes worktime
-      aplay /home/rosco/Scripts/bash_scripts/notification_sound.wav &
       for i in {1..100};
       do
         dunstify -t 0 -u normal "WORK" -h string:x-dunst-stack-tag:pomodoro -h string:fgcolor:#0038a8 -h string:bgcolor:#000000 -h string:frcolor:#0038a8 -h int:value:$i

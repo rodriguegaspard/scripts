@@ -9,6 +9,6 @@ if [ ! -e $TOGGLE ]; then
 else
   rm $TOGGLE
   # Kill the pomodoro process
-  dunstify -t 2000 -u normal "Pomodoro exited successfully." -h string:x-dunst-stack-tag:pomodoro -h string:fgcolor:#26ED49 -h string:bgcolor:#000000 -h string:frcolor:#26ED49  -h int:value:$i
+  dunstify -t 2000 -u normal "Pomodoro exited successfully." -h string:x-dunst-stack-tag:pomodoro -h string:fgcolor:#26ED49 -h string:bgcolor:#000000 -h string:frcolor:#26ED49
   pkill pomodoro
 fi
