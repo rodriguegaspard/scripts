@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #Pomodoro timer switch for dwm
 
 TOGGLE=$HOME/.pomodoro

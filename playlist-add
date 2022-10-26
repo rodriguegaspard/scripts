@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Checks if valid URLs exists in either the system clipboard or in the selection clipboard, and adds them to a playlist.
 
 PLAYLIST=$HOME/.playlist

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #Pomodoro timer using dunst notifications
 
 CYCLES=0

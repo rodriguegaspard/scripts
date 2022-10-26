@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Prints the battery level when under >20%
 
 battery_level=`acpi -b | grep -Po '[0-9]+(?=%)' | awk '{ sum += $1 }; END {print sum}'`

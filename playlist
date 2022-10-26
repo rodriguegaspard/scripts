@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Play all the URLs found on a playlist file using mpv + yt-dlp.
 
 PLAYLIST=$HOME/.playlist

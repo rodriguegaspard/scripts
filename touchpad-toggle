@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #Toggles the touchpad
 
 TOGGLE=$HOME/.touchpad

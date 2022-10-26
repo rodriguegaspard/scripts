@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Checks if a magnet exists in the clipboard and adds it to transmission-remote
 
 SELECTION="$(xclip -o -selection clipboard)"
