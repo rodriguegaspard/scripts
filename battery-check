@@ -2,7 +2,7 @@
 # Prints the battery level when under >20%
 
 battery_level=`acpi -b | grep -Po '[0-9]+(?=%)' | awk '{ sum += $1 }; END {print sum}'`
-if [ $battery_level -le 20 ]
+if [ $battery_level -le 40 ]
   then
     dunstify -t 5000 -u critical "BATTERY LOW" "$battery_level% remaining."
   fi
