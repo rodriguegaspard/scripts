@@ -8,7 +8,7 @@ if [ ! -e $TOGGLE ]; then
   echo "Switched to default US keymay."
 else
   rm $TOGGLE
-  setxkbmap us_qwerty-fr
+  setxkbmap -v -layout us_qwerty-fr
   echo "Switched to US-FR keymap."
 fi
 
