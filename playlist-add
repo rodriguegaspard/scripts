@@ -8,7 +8,7 @@ if [[ -z "$(xclip -o -sel clip)" || ! "$(xclip -o -sel clip)" =~ $REGEX ]]
 then
   if [[ -z "$(xclip -o)" || ! "$(xclip -o)" =~ $REGEX ]]
   then
-    dunstify -t 2000 -u normal "ERROR" "No URLs found on clipboard." -h string:fgcolor:#E60012 -h string:bgcolor:#000000 -h string:frcolor:#E60012 
+    dunstify -t 2000 -u critical "ERROR" "No URLs found on clipboard." 
     exit
   else
     URL="$(xclip -o)"
@@ -20,7 +20,7 @@ fi
 if [ -z "$(grep $URL $PLAYLIST)" ]
 then
   echo $URL >> $PLAYLIST
-  dunstify -t 2000 -u normal "VIDEO ADDED TO PLAYLIST" "$URL" -h string:fgcolor:#26ED49 -h string:bgcolor:#000000 -h string:frcolor:#26ED49 
+  dunstify -t 2000 -u normal "VIDEO ADDED TO PLAYLIST" "$URL"
 else
-  dunstify -t 2000 -u normal "ERROR" "URL is already on playlist" -h string:fgcolor:#E60012 -h string:bgcolor:#000000 -h string:frcolor:#E60012 
+  dunstify -t 2000 -u critical "ERROR" "URL is already on playlist"
 fi
