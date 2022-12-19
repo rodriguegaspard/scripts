@@ -6,10 +6,10 @@ PRIMARY="$(xclip -o)"
 
 if transmission-remote -a $SELECTION;
   then
-    dunstify -t 2000 -u normal "TORRENT SUCCESSFULLY ADDED" "$URL"
+    notify-send -t 2000 -u normal "TORRENT SUCCESSFULLY ADDED" "$URL"
       elif transmission-remote -a  $PRIMARY;
         then
-          dunstify -t 2000 -u normal "TORRENT SUCCESSFULLY ADDED" "$URL"
+          notify-send -t 2000 -u normal "TORRENT SUCCESSFULLY ADDED" "$URL"
         else
-          dunstify -t 2000 -u critical "ERROR" "No magnet links found on clipboard."
+          notify-send -t 2000 -u critical "ERROR" "No magnet links found on clipboard."
 fi

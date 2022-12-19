@@ -4,5 +4,5 @@
 battery_level=`acpi -b | grep -Po '[0-9]+(?=%)' | awk '{ sum += $1 }; END {print sum}'`
 if [ $battery_level -le 20 ]
   then
-    dunstify -t 5000 -u critical "BATTERY LOW" "$battery_level% remaining."
+    notify-send -t 5000 -u critical "BATTERY LOW" "$battery_level% remaining."
   fi

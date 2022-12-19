@@ -10,7 +10,7 @@ WORK=1
       # 5 minutes break
       for i in {1..100}; 
       do
-        dunstify -t 0 -u low "BREAK" -h string:x-dunst-stack-tag:pomodoro -h int:value:$i
+        notify-send -t 0 -u low "BREAK" -h string:x-dunst-stack-tag:pomodoro -h int:value:$i
         sleep 3;
       done
       ((WORK=1))
@@ -18,11 +18,11 @@ WORK=1
       # 25 minutes worktime
       for i in {1..100};
       do
-        dunstify -t 0 -u normal "WORK" -h string:x-dunst-stack-tag:pomodoro -h int:value:$i
+        notify-send -t 0 -u normal "WORK" -h string:x-dunst-stack-tag:pomodoro -h int:value:$i
         sleep 15;
       done
       ((WORK=0))
       ((CYCLES++))
     fi
   done
- dunstify -t 2000 -u critical "WORK IS DONE!" -h string:x-dunst-stack-tag:pomodoro -h int:value:$i
+ notify-send -t 2000 -u critical "WORK IS DONE!" -h string:x-dunst-stack-tag:pomodoro -h int:value:$i

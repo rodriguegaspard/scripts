@@ -4,13 +4,13 @@
 PLAYLIST=$HOME/.playlist
 if [ -z "$(cat $PLAYLIST)" ];
 then
-  dunstify -t 2000 -u critical "PLAYLIST IS EMPTY" 
+  notify-send -t 2000 -u critical "PLAYLIST IS EMPTY" 
 else
   for url in $(cat $PLAYLIST)
   do
     mpv $url
     if [ $? -ne 0 ]; then
-      dunstify -t 2000 -u critical "ERROR" " Failed to read $url"
+      notify-send -t 2000 -u critical "ERROR" " Failed to read $url"
     fi
       sed -i "\|$url|d" $PLAYLIST
   done
