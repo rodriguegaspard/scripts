@@ -1,26 +1,32 @@
 #!/bin/sh
-# Checks if valid URLs exists in either the system clipboard or in the selection clipboard, and adds them to a playlist.
+# Checks if valid URLs are given as an argument, of if they exists in either the system clipboard or in the selection clipboard, and adds them to a playlist.
 
 PLAYLIST=$HOME/.playlist
 REGEX='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
 
-if [[ -z "$(xclip -o -sel clip)" || ! "$(xclip -o -sel clip)" =~ $REGEX ]]
+
+if [[ -z $1 || ! $1 =~ $REGEX ]]
 then
-  if [[ -z "$(xclip -o)" || ! "$(xclip -o)" =~ $REGEX ]]
-  then
-    notify-send -t 2000 -u critical "ERROR" "No URLs found on clipboard." 
-    exit
-  else
-    URL="$(xclip -o)"
-  fi
+	if [[ -z "$(xclip -o -sel clip)" || ! "$(xclip -o -sel clip)" =~ $REGEX ]]
+	then
+		if [[ -z "$(xclip -o)" || ! "$(xclip -o)" =~ $REGEX ]]
+		then
+			notify-send -t 2000 -u critical "ERROR" "No URLs found on clipboard." 
+			exit
+		else
+			URL="$(xclip -o)"
+		fi
+	else
+		URL="$(xclip -o -sel clip)"
+	fi
 else
-  URL="$(xclip -o -sel clip)"
+	URL=$1
 fi
 
 if [ -z "$(grep $URL $PLAYLIST)" ]
 then
-  echo $URL >> $PLAYLIST
-  notify-send -t 2000 -u normal "VIDEO ADDED TO PLAYLIST" "$URL"
+	echo $URL >> $PLAYLIST
+	notify-send -t 2000 -u normal "VIDEO ADDED TO PLAYLIST" "$URL"
 else
-  notify-send -t 2000 -u critical "ERROR" "URL is already on playlist"
+	notify-send -t 2000 -u critical "ERROR" "URL is already on playlist"
 fi
