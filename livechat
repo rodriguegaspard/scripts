@@ -1,0 +1,6 @@
+#!/bin/sh
+# Launches YouTube live chat in browser given a YouTube video URL
+
+for url; do
+	xdg-open $( echo $url | sed -E 's/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|\?v=)([^#\&\?]*).*/\2/' | sed 's/^/https:\/\/www.youtube.com\/live_chat\?is_popout=1\&v=/')
+done
