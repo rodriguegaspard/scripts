@@ -4,7 +4,6 @@
 PLAYLIST=$HOME/.playlist
 REGEX='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
 
-
 if [[ -z $1 || ! $1 =~ $REGEX ]]
 then
 	if [[ -z "$(xclip -o -sel clip)" || ! "$(xclip -o -sel clip)" =~ $REGEX ]]

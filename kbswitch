@@ -1,4 +1,4 @@
-# !/bin/sh
+#!/bin/sh
 # Switches between us and us-qwerty
 
 TOGGLE=$HOME/.keyboard

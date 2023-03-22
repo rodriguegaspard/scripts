@@ -3,13 +3,15 @@
 
 SELECTION="$(xclip -o -selection clipboard)"
 PRIMARY="$(xclip -o)"
-
-if transmission-remote -a $SELECTION;
-  then
-    notify-send -t 2000 -u normal "TORRENT SUCCESSFULLY ADDED" "$URL"
-      elif transmission-remote -a  $PRIMARY;
-        then
-          notify-send -t 2000 -u normal "TORRENT SUCCESSFULLY ADDED" "$URL"
-        else
-          notify-send -t 2000 -u critical "ERROR" "No magnet links found on clipboard."
+if transmission-remote -a $1;
+then
+	notify-send -t 2000 -u normal "TORRENT SUCCESSFULLY ADDED" 
+elif transmission-remote -a $SELECTION;
+then
+	notify-send -t 2000 -u normal "TORRENT SUCCESSFULLY ADDED" "$URL"
+elif transmission-remote -a  $PRIMARY;
+then
+	notify-send -t 2000 -u normal "TORRENT SUCCESSFULLY ADDED" "$URL"
+else
+	notify-send -t 2000 -u critical "ERROR" "No magnet links found"
 fi
