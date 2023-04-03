@@ -4,7 +4,7 @@
 set -x
 PLAYLIST="$HOME/.playlist"
 for threadURL; do
-	VIDEOLIST="$(curl $threadURL | grep -oE '//[a-zA-Z0-9/\/.]+\.webm|//[a-zA-Z0-9/\/.]+\.gif' | uniq)"
+	VIDEOLIST="$(curl $threadURL | grep -oE '//[a-zA-Z0-9/\/.]+\.webm' | uniq)"
 	if [[ $? != 0 ]]; then
 		notify-send -t 2000 -u critical "ERROR" "An error has occured while attempting to scrap the thread."
 	elif [[ ! $VIDEOLIST ]]; then
