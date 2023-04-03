@@ -4,16 +4,25 @@
 PLAYLIST=$HOME/.playlist
 if [ -z "$(cat $PLAYLIST)" ];
 then
-  notify-send -t 2000 -u critical "PLAYLIST IS EMPTY" 
+	notify-send -t 2000 -u critical "PLAYLIST IS EMPTY" 
 else
-  for url in $(cat $PLAYLIST)
-  do
-    mpv $url
-    if [ $? -ne 0 ]; then
-      notify-send -t 2000 -u critical "ERROR" " Failed to read $url"
-    fi
-      sed -i "\|$url|d" $PLAYLIST
-  done
+	SIZE="$(cat $PLAYLIST | wc -l)"
+	VIDEOCOUNT=1
+	for url in $(cat $PLAYLIST)
+	do
+		ACTION=$(dunstify -u normal -t 3000 --action="default, killPlaylist" "$VIDEOCOUNT/$SIZE" "Middle-click to stop the playlist")
+		case "$ACTION" in
+			"default")
+				pkill playlist
+				;;
+		esac
+		((VIDEOCOUNT++))
+		mpv $url
+		if [ $? -ne 0 ]; then
+			notify-send -t 2000 -u critical "ERROR" "$? Failed to read $url"
+		fi
+		sed -i "\|$url|d" $PLAYLIST
+	done
 fi
 
 
