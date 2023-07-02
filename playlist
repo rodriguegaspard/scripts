@@ -7,6 +7,7 @@ then
 	notify-send -t 2000 -u critical "PLAYLIST IS EMPTY" 
 else
 	SIZE="$(cat $PLAYLIST | wc -l)"
+	SIZE=$(($SIZE-1))
 	VIDEOCOUNT=1
 	for url in $(cat $PLAYLIST)
 	do
