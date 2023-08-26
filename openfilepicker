@@ -1,5 +1,5 @@
 #!/bin/sh
 # Opens a new tmux instance with nnn
 
-st -e tmux new-session nnn -cH
+st -e tmux new-session nnn -cHr
 
