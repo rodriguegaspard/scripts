@@ -1,0 +1,13 @@
+#!/bin/sh
+# Sends notifications when there's a calcurse appointment in the near future.
+
+DAILY_REMINDER="$(calcurse --format-apt "%m in %(remaining: %H hours, %M minutes)" --format-recur-apt "%m in %(remaining: %H hours, %M minutes)" -d 1 | awk -e '$1 !~ /[0-9]{2}\/[0-9]{2}\/[0-9]{2}:/ {print $0}')"
+WEEK_REMINDER="$(calcurse --format-apt "%m in %(remaining:%d days, %H hours, %M minutes)" --format-recur-apt "%m in %(remaining:%d days, %H hours, %M minutes)" -d 7 --from tomorrow | awk -e '$1 !~ /[0-9]{2}\/[0-9]{2}\/[0-9]{2}:/ {print $0}')"
+
+if [[ -n $DAILY_REMINDER ]]; then
+	notify-send -u normal -h string:fgcolor:#00ffff -h string:frcolor:#00ffff -t 20000 "TODAY" "$DAILY_REMINDER"
+fi 
+
+if [[ -n $WEEK_REMINDER ]]; then
+	notify-send -u normal -h string:fgcolor:#ff7518 -h string:frcolor:#ff7518 -t 20000 "NEXT 7 DAYS" "$WEEK_REMINDER"
+fi
