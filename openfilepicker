@@ -1,5 +1,6 @@
 #!/bin/sh
 # Opens a new tmux instance with nnn
 
-st -e tmux new-session nnn -cHr
+st -e tmux new-session 'export NNN_FCOLORS=c1e2332e006899f7c6d6abc4 && export NNN_COLORS=#276f93db && nnn -cHr'
+
 
