@@ -20,5 +20,5 @@ if [[ -n $WEEK_APPOINTMENTS ]]; then
 fi
 
 if [[ -n $TO_DO_ITEMS ]]; then
-	notify-send -u normal -h string:fgcolor:#ff0090 -h string:frcolor:#ff0090 -t 20000 "TO-DO LIST" "$TO_DO_ITEMS"
+	notify-send -u normal -h string:fgcolor:#f984ef -h string:frcolor:#f984ef -t 20000 "TO-DO LIST" "$TO_DO_ITEMS"
 fi
