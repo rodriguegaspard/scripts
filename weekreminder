@@ -3,8 +3,8 @@
 
 DAILY_APPOINTMENTS="$(calcurse --filter-type apt,recur-apt --format-apt "%m in %(remaining: %H hours, %M minutes)" --format-recur-apt "%m in %(remaining: %H hours, %M minutes)" -Q --days 1 | awk -e '$0 !~ /[0-9]{2}\/[0-9]{2}\/[0-9]{2}:/ {print $0}' | awk -e '$0 !~ /-[0-9]+/ {print $0}')"
 DAILY_EVENT="$(calcurse --filter-type event,recur-event --format-event "%m" --format-recur-event "%m" -Q --days 1 | awk -e '$0 !~ /[0-9]{2}\/[0-9]{2}\/[0-9]{2}:/ {print $0}')"
-WEEK_APPOINTMENTS="$(calcurse --filter-type apt,recur-apt --output-datefmt "%A" --format-apt "%m (%S ➜ %E)" --format-recur-apt "%m (%S ➜ %E)" -Q --from tomorrow --days 7 | awk 'NR%2==0 {print "<b><i>"p"</i></b>"" "$0} NR%2 {p=$0}')"
-WEEK_EVENTS="$(calcurse -Q --filter-type event,recur-event --output-datefmt "%A" --format-event " %m " --format-recur-event " %m " --days 7 | awk 'NR%2==0 {print "<b><i>"p"</i></b>"" "$0} NR%2 {p=$0}')"
+WEEK_APPOINTMENTS="$(calcurse --filter-type apt,recur-apt --output-datefmt "%A" --format-apt "%m (%S ➜ %E)" --format-recur-apt "%m (%S ➜ %E)" -Q --from tomorrow --days 5 | awk 'NR%2==0 {print "<b><i>"p"</i></b>"" "$0} NR%2 {p=$0}')"
+WEEK_EVENTS="$(calcurse --filter-type event,recur-event --output-datefmt "%A" --format-event " %m " --format-recur-event " %m " -Q --from tomorrow --days 5 | awk 'NR%2==0 {print "<b><i>"p"</i></b>"" "$0} NR%2 {p=$0}')"
 TO_DO_ITEMS="$(calcurse -t --format-todo "<b>[%p]</b> - %m\n" | awk 'NR!=1 {print $0}')"
 
 WEEK_PLANNING=$(for day in Monday Tuesday Wednesday Thursday Friday Saturday Sunday; do echo "$WEEK_EVENTS\n$WEEK_APPOINTMENTS" | grep $day; done | uniq)
@@ -16,7 +16,7 @@ if [[ -n $DAILY_APPOINTMENTS || -n $DAILY_EVENT ]]; then
 fi
 
 if [[ -n $WEEK_PLANNING ]]; then
-	notify-send -u normal -h string:fgcolor:#ff7518 -h string:frcolor:#ff7518 -t 20000 "NEXT 7 DAYS" "$WEEK_PLANNING"
+	notify-send -u normal -h string:fgcolor:#ff7518 -h string:frcolor:#ff7518 -t 20000 "NEXT 5 DAYS" "$WEEK_PLANNING"
 fi
 
 if [[ -n $TO_DO_ITEMS ]]; then
