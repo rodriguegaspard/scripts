@@ -1,13 +1,10 @@
 #!/bin/sh
 # Sends notifications when there's a calcurse appointment in the near future.
 
-DAILY_APPOINTMENTS="$(calcurse --filter-type apt,recur-apt --format-apt "%m in %(remaining: %H hours, %M minutes)" --format-recur-apt "%m in %(remaining: %H hours, %M minutes)" -Q --days 1 | awk -e '$0 !~ /[0-9]{2}\/[0-9]{2}\/[0-9]{2}:/ {print $0}' | awk -e '$0 !~ /-[0-9]+/ {print $0}')"
-DAILY_EVENT="$(calcurse --filter-type event,recur-event --format-event "%m" --format-recur-event "%m" -Q --days 1 | awk -e '$0 !~ /[0-9]{2}\/[0-9]{2}\/[0-9]{2}:/ {print $0}')"
-WEEK_APPOINTMENTS="$(calcurse --filter-type apt,recur-apt --output-datefmt "%A" --format-apt "%m (%S ➜ %E)" --format-recur-apt "%m (%S ➜ %E)" -Q --from tomorrow --days 5 | awk 'NR%2==0 {print "<b><i>"p"</i></b>"" "$0} NR%2 {p=$0}')"
-WEEK_EVENTS="$(calcurse --filter-type event,recur-event --output-datefmt "%A" --format-event " %m " --format-recur-event " %m " -Q --from tomorrow --days 5 | awk 'NR%2==0 {print "<b><i>"p"</i></b>"" "$0} NR%2 {p=$0}')"
+DAILY_APPOINTMENTS="$(calcurse --filter-type apt,recur-apt --format-apt "%m in %(remaining: %H hours, %M minutes)\n" --format-recur-apt "%m in %(remaining: %H hours, %M minutes)\n" -Q --days 1 | awk -e '$0 !~ /[0-9]{2}\/[0-9]{2}\/[0-9]{2}:/ {print $0}' | awk -e '$0 !~ /-[0-9]+/ {print $0}')"
+DAILY_EVENT="$(calcurse --filter-type event,recur-event --format-event "%m\n" --format-recur-event "%m\n" -Q --days 1 | awk -e '$0 !~ /[0-9]{2}\/[0-9]{2}\/[0-9]{2}:/ {print $0}')"
+WEEK_PLANNING="$(calcurse --filter-type event,recur-event,apt,recur-apt --output-datefmt "<b>%A</b>" --format-event " %m \n" --format-recur-event " %m \n"  --format-apt " %m (%S ➜ %E) \n" --format-recur-apt " %m (%S ➜ %E) \n" -Q --from tomorrow --days 5 | sed '/^$/d')"
 TO_DO_ITEMS="$(calcurse -t --format-todo "<b>[%p]</b> - %m\n" | awk 'NR!=1 {print $0}')"
-
-WEEK_PLANNING=$(for day in Monday Tuesday Wednesday Thursday Friday Saturday Sunday; do echo "$WEEK_EVENTS\n$WEEK_APPOINTMENTS" | grep $day; done | uniq)
 
 # Print out events and appointments in order
 
