@@ -9,13 +9,13 @@ TO_DO_ITEMS="$(calcurse -t --format-todo "<b>[%p]</b> - %m\n" | awk 'NR!=1 {prin
 # Print out events and appointments in order
 
 if [[ -n $DAILY_APPOINTMENTS || -n $DAILY_EVENT ]]; then	
-	notify-send -u normal -h string:fgcolor:#00ffff -h string:frcolor:#00ffff -t 20000 "TODAY" "$DAILY_EVENT $DAILY_APPOINTMENTS"
+	notify-send -u normal -t 20000 "TODAY" "$DAILY_EVENT $DAILY_APPOINTMENTS"
 fi
 
 if [[ -n $WEEK_PLANNING ]]; then
-	notify-send -u normal -h string:fgcolor:#ff7518 -h string:frcolor:#ff7518 -t 20000 "NEXT 5 DAYS" "$WEEK_PLANNING"
+	notify-send -u normal -t 20000 "NEXT 5 DAYS" "$WEEK_PLANNING"
 fi
 
 if [[ -n $TO_DO_ITEMS ]]; then
-	notify-send -u normal -h string:fgcolor:#f984ef -h string:frcolor:#f984ef -t 20000 "TO-DO LIST" "$TO_DO_ITEMS"
+	notify-send -u normal -t 20000 "TO-DO LIST" "$TO_DO_ITEMS"
 fi
