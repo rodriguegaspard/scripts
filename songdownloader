@@ -1,4 +1,4 @@
 #!/bin/sh
-# Downloads an audio file using yt-dlp and converts it to FLAC
+# Downloads an audio file using yt-dlp and converts it to OPUS
 
-yt-dlp -f bestaudio -o - $1 | ffmpeg -i pipe:0 $2.flac
+yt-dlp -f bestaudio -o - $1 | ffmpeg -i pipe:0 $2.opus
