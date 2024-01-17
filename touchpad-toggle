@@ -2,12 +2,12 @@
 #Toggles the touchpad
 
 TOGGLE=$HOME/.touchpad
-if [ ! -e $TOGGLE ]; then
-  touch $TOGGLE
+if [ ! -e "$TOGGLE" ]; then
+  touch "$TOGGLE"
   xinput disable "SynPS/2 Synaptics TouchPad"
   notify-send -u low -t 2000 "TOUCHPAD DISABLED"
 else
-  rm $TOGGLE
+  rm "$TOGGLE"
   xinput enable "SynPS/2 Synaptics TouchPad"
   notify-send -u low -t 2000 "TOUCHPAD ENABLED"
 fi

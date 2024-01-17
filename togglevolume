@@ -3,7 +3,7 @@
 
 pactl set-sink-mute @DEFAULT_SINK@ toggle
 VOLUME_STATUS=$(pactl list sinks | grep "Mute: " | awk '{print $2}')
-if [[ $VOLUME_STATUS == "no" ]]; then
+if [ "$VOLUME_STATUS" = "no" ]; then
 	notify-send -u normal -t 1000 "VOLUME" "ON" -h string:x-dunst-stack-tag:volume
 else
 	notify-send -u normal -t 1000 "VOLUME" "OFF" -h string:x-dunst-stack-tag:volume

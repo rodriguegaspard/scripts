@@ -4,14 +4,13 @@
 set -x
 PLAYLIST="$HOME/.playlist"
 for threadURL; do
-	VIDEOLIST="$(curl $threadURL | grep -oE '//[a-zA-Z0-9/\/.]+\.webm' | uniq)"
-	if [[ $? != 0 ]]; then
+	if ! VIDEOLIST="$(curl "$threadURL" | grep -oE '//[a-zA-Z0-9/\/.]+\.webm' | uniq)"; then
 		notify-send -t 2000 -u critical "ERROR" "An error has occured while attempting to scrap the thread."
-	elif [[ ! $VIDEOLIST ]]; then
+	elif [ ! "$VIDEOLIST" ]; then
 		notify-send -t 2000 -u critical "ERROR" "No videos found on this thread."
 	else
-		echo $VIDEOLIST | tr ' ' '\n' | sed 's/^/https:/' >> $PLAYLIST
-		ITEM_NUMBER="$(echo $VIDEOLIST | tr ' ' '\n' | wc -l)"
+		echo "$VIDEOLIST" | tr ' ' '\n' | sed 's/^/https:/' >> "$PLAYLIST"
+		ITEM_NUMBER="$(echo "$VIDEOLIST" | tr ' ' '\n' | wc -l)"
 		notify-send -t 2000 -u normal "ADDED $ITEM_NUMBER videos to playlist"
 	fi
 done

@@ -4,11 +4,11 @@
 PLAYLIST=$HOME/.playlist
 REGEX='(https?|ftp|file)://[-A-Za-z0-9\+&@#/%?=~_|!:,.;]*[-A-Za-z0-9\+&@#/%=~_|]'
 
-if [[ -z $1 || ! $1 =~ $REGEX ]]
+if [ -z "$1" ] || ! echo "$1" | grep -Eq "$REGEX"
 then
-	if [[ -z "$(xclip -o -sel clip)" || ! "$(xclip -o -sel clip)" =~ $REGEX ]]
+	if [ -z "$(xclip -o -sel clip)" ] || ! xclip -o -sel clip | grep -Eq "$REGEX"
 	then
-		if [[ -z "$(xclip -o)" || ! "$(xclip -o)" =~ $REGEX ]]
+		if [ -z "$(xclip -o)" ] || ! xclip -o | grep -Eq "$REGEX"
 		then
 			notify-send -t 2000 -u critical "ERROR" "No URLs found on clipboard." 
 			exit
@@ -21,10 +21,9 @@ then
 else
 	URL=$1
 fi
-
-if [ -z "$(grep $URL $PLAYLIST)" ]
+if ! grep "$URL" "$PLAYLIST"
 then
-	echo $URL >> $PLAYLIST
+	echo "$URL" >> "$PLAYLIST"
 	notify-send -t 2000 -u normal "VIDEO ADDED TO PLAYLIST" "$URL"
 else
 	notify-send -t 2000 -u critical "ERROR" "URL is already on playlist"

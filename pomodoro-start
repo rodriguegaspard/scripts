@@ -3,11 +3,11 @@
 
 TOGGLE=$HOME/.pomodoro
 
-if [ ! -e $TOGGLE ]; then
-  touch $TOGGLE
+if [ ! -e "$TOGGLE" ]; then
+  touch "$TOGGLE"
   (pomodoro &)
 else
-  rm $TOGGLE
+  rm "$TOGGLE"
   # Kill the pomodoro process
   notify-send -t 2000 -u critical "Pomodoro exited successfully." -h string:x-dunst-stack-tag:pomodoro
   pkill pomodoro

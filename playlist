@@ -2,27 +2,24 @@
 # Play all the URLs found on a playlist file using mpv + yt-dlp.
 
 PLAYLIST=$HOME/.playlist
-if [ -z "$(cat $PLAYLIST)" ];
+if [ -z "$(cat "$PLAYLIST")" ];
 then
 	notify-send -t 2000 -u critical "PLAYLIST IS EMPTY" 
 else
-	SIZE="$(cat $PLAYLIST | wc -l)"
+	SIZE="$(wc -l < "$PLAYLIST")"
 	VIDEOCOUNT=1
-	for url in $(cat $PLAYLIST)
+  while IFS="" read -r url || [ -n "$url" ]
 	do
 		ACTION=$(dunstify -u normal -t 3000 --action="default, killPlaylist" "$VIDEOCOUNT/$SIZE" "Middle-click to stop the playlist")
 		case "$ACTION" in
 			"default")
-				pkill playlist
+        pkill playlist
 				;;
 		esac
-		((VIDEOCOUNT++))
-		mpv $url
-		if [ $? -ne 0 ]; then
-			notify-send -t 2000 -u critical "ERROR" "$? Failed to read $url"
+    VIDEOCOUNT=$((VIDEOCOUNT+1))
+		if ! mpv "$url"; then
+			notify-send -t 2000 -u critical "ERROR" "Failed to read $url"
 		fi
-		sed -i "\|$url|d" $PLAYLIST
-	done
+	done < "$PLAYLIST"
+  sed -i "1,$VIDEOCOUNT d" "$PLAYLIST"
 fi
-
-

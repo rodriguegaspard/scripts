@@ -5,7 +5,7 @@
 SCREEN_SIZE=$(slop -D -f '-video_size %wx%h -i :0.0+%x,%y')
 DURATION=$(dmenu -p "Duration (in seconds):" < /dev/null)
 VIDEO_DIR="/home/rosco/video/recordings"
-FILENAME="recording_"$(date +%s)".webm"
-echo $FILENAME
+FILENAME="recording_$(date +%s).webm"
+echo "$FILENAME"
 
-ffmpeg -f x11grab $SCREEN_SIZE -framerate 25 -t $DURATION -c:v libvpx-vp9 -b:v 0 -crf 35 -deadline realtime -cpu-used 8 $VIDEO_DIR/$FILENAME
+ffmpeg -f x11grab "$SCREEN_SIZE" -framerate 25 -t "$DURATION" -c:v libvpx-vp9 -b:v 0 -crf 35 -deadline realtime -cpu-used 8 "$VIDEO_DIR"/"$FILENAME"
