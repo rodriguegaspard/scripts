@@ -2,11 +2,13 @@
 # Prompts the user for a region of the screen and a duration, and records the screen.
 # Requires ffmpeg, slop and dmenu
 
-REGION=$(slop -D -f '%w,%h')
+REGION=$(slop -D -f '%w,%h,%x,%y')
 WIDTH=$(echo "$REGION" | cut -d, -f1)
 HEIGHT=$(echo "$REGION" | cut -d, -f2)
+X=$(echo "$REGION" | cut -d, -f3)
+Y=$(echo "$REGION" | cut -d, -f4)
 REGION_SIZE='-video_size '"$WIDTH"'x'"$HEIGHT"''
-INPUT='-i :0.0+'"$WIDTH"','"$HEIGHT"''
+INPUT='-i :0.0+'"$X"','"$Y"''
 DURATION=$(dmenu -p "Duration (in seconds):" < /dev/null)
 VIDEO_DIR="/home/rosco/video/recordings"
 FILENAME="recording_$(date +%s).webm"
