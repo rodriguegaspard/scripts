@@ -1,0 +1,3 @@
+!#/bin/sh
+echo "Starting music sync.."
+sudo rsync -r --progress --ignore-existing ~/audio/albums/* /mnt/storage
