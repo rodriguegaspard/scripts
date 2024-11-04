@@ -1,4 +1,4 @@
 #!/bin/sh
 # Uploads an image on https://0x0.sh
 
-curl -F"file=@$1" -Fexpires=1 -Fsecret= https://0x0.st
+curl -F"file=@$1" -Fexpires=1 https://0x0.st
