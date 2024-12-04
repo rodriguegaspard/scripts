@@ -1,0 +1,5 @@
+#!/bin/sh
+# Access a dmenu interface in order to copy into clipboard special characters and kaomojis
+
+FILENAME="kaomojis.txt"
+cat "$FILENAME" | dmenu | xclip -selection clipboard
