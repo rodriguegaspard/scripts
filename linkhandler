@@ -1,6 +1,10 @@
 #!/bin/sh
-# Uses an appropriate program to open a link depending of its MIME type. Basically Luke Smith's linkhandler, with a few modifications.
-# Mostly used for IRC
+# Uses an appropriate program to open a link depending of its MIME type. Basically Luke Smith's linkhandler, with a few modifications. By default, requires mpv, zathura and feh.
+
+VIDEO_PROGRAM=mpv
+IMAGE_PROGRAM=feh
+PDF_PROGRAM=zathura
+BROWSER=qutebrowser
 
 if [ -z "$1" ]; then
 	url="$(xclip -o)"
@@ -11,11 +15,11 @@ fi
 if echo "$url" | grep -E '.*\.webm.*|.*\.mkv.*|.*\.gif.*|.*\.mp4.*|.*youtube\.com/watch.*|.*youtube\.com/live.*|.*youtube\.com/playlist.*|.*youtube\.com/shorts.*|.*youtu\.be.*|.*odysee\.com.*|.*twitch\.tv.*'; then
 		setsid -f mpv -quiet "$url" >/dev/null 2>&1 
   elif echo "$url" | grep -E '.*\.png.*|.*\.jpg.*|.*\.jpeg.*|.*\.webp.*'; then
-		curl -sL "$url" > "/tmp/$(echo "$url" | sed "s/.*\///;s/%20/ /g")" && feh "/tmp/$(echo "$url" | sed "s/.*\///;s/%20/ /g")"  >/dev/null 2>&1 &
+		curl -sL "$url" > "/tmp/$(echo "$url" | sed "s/.*\///;s/%20/ /g")" && "$IMAGE_PROGRAM" "/tmp/$(echo "$url" | sed "s/.*\///;s/%20/ /g")"  >/dev/null 2>&1 &
   elif echo "$url" | grep -E '.*\.pdf.*|.*\.cbz.*|.*\.cbr.*|.*\.epub.*|.*\.mobi.*'; then
-		curl -sL "$url" > "/tmp/$(echo "$url" | sed "s/.*\///;s/%20/ /g")" && zathura "/tmp/$(echo "$url" | sed "s/.*\///;s/%20/ /g")"  >/dev/null 2>&1 &
+		curl -sL "$url" > "/tmp/$(echo "$url" | sed "s/.*\///;s/%20/ /g")" && "$PDF_PROGRAM" "/tmp/$(echo "$url" | sed "s/.*\///;s/%20/ /g")"  >/dev/null 2>&1 &
   elif echo "$url" | grep -E '.*\.mp3.*|.*\.aac.*|.*\.opus.*|.*\.flac.*'; then
-		setsid -f mpv "$url" >/dev/null 2>&1
+		setsid -f "$VIDEO_PROGRAM" "$url" >/dev/null 2>&1
   else
     setsid -f "$BROWSER" "$url" >/dev/null 2>&1
 fi
