@@ -1,7 +1,0 @@
-#!/bin/sh
-# Converts any image file to a .jpg file of size 500x500, and with PixelsPerInch as an unit.
-
-for file; do
-	NEW_FILENAME="${file%.*}"'.jpg'
-	convert "$file" -resize 500x500 "$NEW_FILENAME"
-done
