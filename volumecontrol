@@ -1,0 +1,38 @@
+#!/bin/sh
+# General volume control script for dwm. Increments/decrements audio by 5%, and mutes/unmute depending of the flag provided.
+
+increment(){
+  for sink in $(pactl list short sinks | awk '{print $2}'); do
+    pactl set-sink-volume "$sink" +5%;
+  done
+  NEW_VOLUME=$(pactl list sinks | grep -oP "Volume: .*?%" | awk '{print $5}')
+  notify-send -u low -t 1000 "VOLUME" "$NEW_VOLUME" -h string:x-dunst-stack-tag:volume
+}
+
+decrement(){
+  for sink in $(pactl list short sinks | awk '{print $2}'); do
+    pactl set-sink-volume "$sink" -5%;
+  done
+  NEW_VOLUME=$(pactl list sinks | grep -oP "Volume: .*?%" | awk '{print $5}')
+  notify-send -u low -t 1000 "VOLUME" "$NEW_VOLUME" -h string:x-dunst-stack-tag:volume 
+}
+
+toggle(){
+  pactl set-sink-mute @DEFAULT_SINK@ toggle
+  VOLUME_STATUS=$(pactl list sinks | grep "Mute: " | awk '{print $2}')
+  if [ "$VOLUME_STATUS" = "no" ]; then
+    notify-send -u normal -t 1000 "VOLUME" "ON" -h string:x-dunst-stack-tag:volume
+  else
+    notify-send -u normal -t 1000 "VOLUME" "OFF" -h string:x-dunst-stack-tag:volume
+  fi
+}
+
+while getopts 'idt' flag; do
+  case "${flag}" in
+    i) increment ;;
+    d) decrement ;;
+    t) toggle ;;
+    *) exit 1 ;;
+  esac
+done
+
