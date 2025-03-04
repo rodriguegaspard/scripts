@@ -9,9 +9,9 @@ A very simple script that checks the battery level and creates a notification vi
 General volume control script for PulseAudio using ```pactl```. Increments/decrements audio by 5%, and mutes/unmute depending of the flag provided. Creates notifications on change with ```notify-send```.
 ```bash
 volumencontrol [-idth]
-  -i: Increments volume by 5.
-  -d: Decrements volume by 5.
-  -t: Toggles volume between mute and unmute.
+  -i: Increments volume by 5
+  -d: Decrements volume by 5
+  -t: Toggles volume between mute and unmute
   -h: prints this help section
 ```
 ## snapshot
@@ -20,5 +20,14 @@ General screenshot/video capture script using ```scrot```, ```dmenu```, ```x11gr
 snapshot [-svh]
   -s: screenshot mode
   -v: video capture mode
-  -h: prints this help section"
+  -h: prints this help section
+```
+## storagesync
+A simple storage sync script using ```rsync``` with different presets depending on the device mounted.
+```bash
+storagesync [-abgh]
+ -a: audio mode
+ -b: books mode
+ -g: general mode
+ -h: prints this help section
 ```

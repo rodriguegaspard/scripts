@@ -1,0 +1,47 @@
+#!/bin/sh
+# General storage sync script for my devices. Prompts the user for a mode (audio, ebook, general) before syncing.
+
+sync_audio(){
+  echo "Synchronizing audio.."
+  sudo rsync -r --progress --ignore-existing "$HOME"/audio/albums/* /mnt/storage
+  echo "End of sync."
+}
+
+sync_books(){
+  echo "Synchronizing books.."
+  sudo rsync -r --progress --ignore-existing "$HOME"/files/books/* /mnt/storage
+  echo "End of sync."
+}
+
+sync_general(){
+  echo "Synchronizing files.."
+  sudo rsync -r --progress --ignore-existing "$HOME"/files/bank/* /mnt/storage/files/documents/bank
+  sudo rsync -r --progress --ignore-existing "$HOME"/files/medical/* /mnt/storage/files/documents/medical
+  sudo rsync -r --progress --ignore-existing "$HOME"/files/school/* /mnt/storage/files/documents/school
+  sudo rsync -r --progress --ignore-existing "$HOME"/files/identity/* /mnt/storage/files/documents/identity
+  sudo rsync -r --progress --ignore-existing "$HOME"/files/visa/* /mnt/storage/files/documents/visa
+  sudo rsync -r --progress --ignore-existing "$HOME"/files/docs/* /mnt/storage/files/documents/docs
+  sudo rsync -r --progress --ignore-existing "$HOME"/files/invoices/* /mnt/storage/files/documents/invoices
+  sudo rsync -r --progress --ignore-existing "$HOME"/files/notes/* /mnt/storage/files/documents/notes
+  sudo rsync -r --progress --ignore-existing "$HOME"/files/books/* /mnt/storage/books
+  echo "Synchronizing pictures.."
+  sudo rsync -r --progress --ignore-existing "$HOME"/pictures/photos /mnt/storage/pictures
+}
+
+usage(){
+  printf("storagesync [-abgh]
+-a: audio mode.
+-b: books mode.
+-g: general mode.
+-h: prints this help section.") 
+}
+
+while getopts 'abgh' flag; do
+  case "${flag}" in
+    a) sync_audio ;;
+    b) sync_books ;;
+    g) sync_general;;
+    h) usage ;;
+  esac
+done
+
