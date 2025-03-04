@@ -27,12 +27,20 @@ toggle(){
   fi
 }
 
-while getopts 'idt' flag; do
+usage(){
+  printf "volumencontrol [-idth]
+  -i: Increments volume by 5.
+  -d: Decrements volume by 5.
+  -t: Toggles volume between mute and unmute.
+  -h: prints this help section"
+}
+
+while getopts 'idth' flag; do
   case "${flag}" in
     i) increment ;;
     d) decrement ;;
     t) toggle ;;
-    *) exit 1 ;;
+    h) usage ;;
   esac
 done
 
