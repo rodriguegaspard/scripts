@@ -14,3 +14,11 @@ volumencontrol [-idth]
   -t: Toggles volume between mute and unmute.
   -h: prints this help section
 ```
+## snapshot
+General screenshot/video capture script using ```scrot```, ```dmenu```, ```x11grab``` and ```ffmpeg```. Prompts the user to select a region using ```scrot``` (and a duration via ```dmenu``` for video capture), and saves a screenshot in .png format, or a recording in .mp4, in a user-defined directory.
+```bash
+snapshot [-svh]
+  -s: screenshot mode
+  -v: video capture mode
+  -h: prints this help section"
+```

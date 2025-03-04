@@ -1,0 +1,40 @@
+#!/bin/sh
+# General screen capture script. Requires scrot, ffmpeg, and x11grab.
+# SCREENSHOT MODE (-s): Prompts the user to select a region and takes a screenshot, optimize it, and saves it in $SCREENSHOT_DIR
+# VIDEO CAPTURE MODE (-v): Prompts the user to select a region and specify a time duration. Saves the recording in $VIDEO_DIR.
+
+SCREENSHOT_DIR="/home/rosco/pictures/screenshots"
+VIDEO_DIR="/home/rosco/video/recordings"
+
+screenshot(){
+  scrot -s -f -q 100 "$SCREENSHOT_DIR"/screenshot_%Y-%m-%d_%T.png
+}
+
+video_capture(){
+  REGION=$(slop -D -f '%w,%h,%x,%y')
+  WIDTH=$(echo "$REGION" | cut -d, -f1)
+  HEIGHT=$(echo "$REGION" | cut -d, -f2)
+  X=$(echo "$REGION" | cut -d, -f3)
+  Y=$(echo "$REGION" | cut -d, -f4)
+  REGION_SIZE='-video_size '"$WIDTH"'x'"$HEIGHT"''
+  INPUT='-i :0.0+'"$X"','"$Y"''
+  DURATION=$(dmenu -p "Duration (in seconds):" < /dev/null)
+  FILENAME="recording_$(date +%s).mp4"
+  COMMAND='ffmpeg -loglevel fatal -f x11grab '"$REGION_SIZE"' '"$INPUT"' -framerate 25 -t '"$DURATION"' -c:v libvpx-vp9 -b:v 0 -crf 35 -deadline realtime -cpu-used 8 '"$VIDEO_DIR"'/'"$FILENAME"''
+  eval "$COMMAND"
+}
+
+usage(){
+  printf "snapshot [-svh]
+  -s: screenshot mode
+  -v: video capture mode
+  -h: prints this help section"
+}
+
+while getopts 'svh' flag; do
+  case "${flag}" in
+    s) screenshot  ;;
+    v) video_capture ;;
+    h) usage ;;
+  esac
+done
