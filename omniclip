@@ -1,0 +1,191 @@
+#!/bin/sh
+# Clipboard manager, saves strings in a file (and asks for a tag to sort it correctly), and performs several actions on then at the user request (save to clipboard, save to local playlist, save locally, open). Requires dmenu. 
+# Usage : omniclip [-s|-i]
+# SELECT MODE (-s) : Access a local clipboard or a playlist and fuzzy search using tags, then either [s]ave locally, [d]elete item, [o]pen item, [m]ove item to other file.
+# When selecting a playlist, extra options are available : [D]elete the whole playlist, [p]lay all items in sequence and [P]ause the playlist.
+# GENERAL MODE (-g) : Access the system clipboard and asks user if they want to save the item to a clipboard, open it or download it.
+# INSERT MODE (-i) : Prompt the user to select if they want to save to either a clipboard or a playlist, choose a file and a tag, and saves the item.
+# OPEN ITEM (-o) : Opens the current item with the appropriate program, without saving it in a file.
+# DOWNLOAD ITEM (-d) : Downloads the current item without saving it in a file.
+
+# FILE SYNTAX
+# Clipboards and playlists are simple txt files. Each line represents an item.
+# For clipboards, each item is preceded by a tag.
+# For playlists, no tag system, only one item per line.
+
+# CONFIG
+VIDEO_PROGRAM=mpv
+IMAGE_PROGRAM=feh
+PDF_PROGRAM=zathura
+CLIPBOARDS_DIR=$HOME/.local/share/omniclip/clipboards
+PLAYLISTS_DIR=$HOME/.local/share/omniclip/playlists
+DOWNLOAD_DIR=$HOME/downloads
+
+if [ ! -d "$CLIPBOARDS_DIR" ]; then
+  mkdir -p "$CLIPBOARDS_DIR"
+fi
+
+if [ ! -d "$PLAYLISTS_DIR" ]; then
+  mkdir -p "$PLAYLISTS_DIR"
+fi
+
+_create(){
+  FILENAME=$(echo "" | dmenu -p "Name for new $2:")
+  touch $1/"$FILENAME".txt
+}
+
+_browse_files(){
+  if [[ -z $(ls "$1") ]]; then
+    _create $1 $2
+  else
+    FILE=$(ls "$1" | tr -s "\n" | sed "s/.txt//" | sort -u | dmenu -p "Choose a $2 to browse, or create a new one by giving it a name:")
+    if ! ls "$1" | grep -q "$FILE" ; then
+      touch "$1"/"$FILE".txt
+    fi
+    echo "$1"/"$FILE".txt
+  fi
+}
+
+_select(){
+  FILE="$CLIPBOARDS_DIR"/$(ls "$CLIPBOARDS_DIR" | tr -s "\n" | sed "s/.txt//" | sort -u | dmenu -p "Choose a clipboard to browse:").txt
+  if [[ -z $(cat "$FILE") ]]; then
+    notify-send "No items in the current file."
+    exit 1
+  fi
+  TAG=$(cat $FILE | tr -s '\n' |  cut -d " " -f 1 | sort -u | dmenu -p "Choose a tag to browse:")
+  cat "$FILE" | grep "$TAG" | cut -d " " -f 2- | dmenu | xclip -selection clipboard
+}
+
+_delete_item(){
+  exit 1
+}
+
+_delete_file(){
+  exit 1
+}
+
+_insert(){
+  CHOICE=$(printf "Clipboard\nPlaylist" | tr -s '\n' | dmenu -p "Where to insert?")
+  case "$CHOICE" in
+    "Clipboard") 
+      # Reprompts the user if the tag contains spaces, in the future let the delimiter be specific in the config
+      FILE=$(_browse_files "$CLIPBOARDS_DIR" "clipboard")
+      TAG=$(cat $FILE | tr -s '\n' |  cut -d " " -f 1 | sort -u | dmenu -p "Choose a tag, or create a new one, for the item:")
+      echo "$TAG" $1 >> "$FILE"
+      ;;
+    "Playlist") 
+      FILE=$(_browse_files "$PLAYLISTS_DIR" "playlist")
+      echo "$1" >> "$FILE"
+      ;;
+    *) exit 0
+      ;;
+  esac
+}
+
+_read_playlist(){
+  exit 1;
+}
+
+_move(){
+  exit 1
+}
+
+_open(){
+  if echo "$1" | grep -E '.*\.webm.*|.*\.mkv.*|.*\.gif.*|.*\.mp4.*|.*youtube\.com/watch.*|.*youtube\.com/live.*|.*youtube\.com/playlist.*|.*youtube\.com/shorts.*|.*youtu\.be.*|.*odysee\.com.*|.*twitch\.tv.*'; then
+    setsid -f $VIDEO_PROGRAM "$1" >/dev/null 2>&1 
+  elif echo "$1" | grep -E '.*\.png.*|.*\.jpg.*|.*\.jpeg.*|.*\.webp.*'; then
+    c1 -sL "$1" > "/tmp/$(echo "$1" | sed "s/.*\///;s/%20/ /g")" && "$IMAGE_PROGRAM" "/tmp/$(echo "$1" | sed "s/.*\///;s/%20/ /g")"  >/dev/null 2>&1 &
+  elif echo "$1" | grep -E '.*\.pdf.*|.*\.cbz.*|.*\.cbr.*|.*\.epub.*|.*\.mobi.*'; then
+    c1 -sL "$1" > "/tmp/$(echo "$1" | sed "s/.*\///;s/%20/ /g")" && "$PDF_PROGRAM" "/tmp/$(echo "$1" | sed "s/.*\///;s/%20/ /g")"  >/dev/null 2>&1 &
+  elif echo "$1" | grep -E '.*\.mp3.*|.*\.aac.*|.*\.opus.*|.*\.flac.*'; then
+    setsid -f "$VIDEO_PROGRAM" "$1" >/dev/null 2>&1
+  else
+    setsid -f "$BROWSER" "$1" >/dev/null 2>&1
+  fi
+}
+
+_audio_extractor(){
+  FILENAME="audio_$(date +%s)"
+  if echo "$1" | grep -E '.*\.mp3.*|.*\.aac.*|.*\.opus.*|.*\.flac.*|.*\.wav'; then
+    wget -P "$DOWNLOAD_DIR" "$1" >/dev/null 2>&1 && notify-send "success"
+  elif yt-dlp -o "$DOWNLOAD_DIR/$FILENAME.%(ext)s" -f bestaudio "$1" >/dev/null; then
+    notify-send "success"
+  else
+    notify-send "failure"
+  fi
+}
+
+_video_extractor(){
+  FILENAME="video_$(date +%s)"
+  if echo "$1" | grep -E '.*\.webm.*|.*\.mkv.*|.*\.gif.*|.*\.mp4.*'; then
+    wget -P $DOWNLOAD_DIR "$1" >/dev/null 2>&1 && notify-send "success"
+  elif yt-dlp -o "$DOWNLOAD_DIR/$FILENAME.%(exts)s" -f bestaudio "$1" >/dev/null; then
+    notify-send "success"
+  else
+    notify-send "failure"
+  fi
+}
+
+_image_extractor(){
+  FILENAME="image_$(date +%s).png"
+  setsif -f wget $1 -O - | magick - $NAME 
+}
+
+_download(){
+  PRESET_LIST="Audio\nVideo\nImage"
+  PRESET=$(printf $PRESET_LIST | tr -s '\n' |  cut -d " " -f 1 | dmenu -p "Select download preset, or select nothing for downloading using wget:")
+  case "$PRESET" in
+    "Audio") _audio_extractor $1
+      ;;
+    "Video") _video_extractor $1
+      ;;
+    "Picture") _image_extractor $1
+      ;;
+    *) wget -P $DOWNLOAD_DIR "$1" >/dev/null 2>&1 && notify-send "success"
+      ;;
+  esac
+}
+
+_get_clipboard(){
+  if [ -z "$(xclip -o -sel clip)" ]
+  then
+    if [ -z "$(xclip -o)" ]
+    then
+      notify-send -t 1500 -u critical "ERROR" "No items found on clipboard." 
+      exit 1
+    else
+      item="$(xclip -o)"
+    fi
+  else
+    item="$(xclip -o -sel clip)"
+  fi
+  echo $item | tr -s '\n' ' '
+}
+
+_actions_general_mode(){
+  ACTION=$(printf "Save\nOpen\nDownload\nPlay" | tr -s '\n' | dmenu -p "Which action would you like to perform?")
+  case "$CHOICE" in
+    "Save")_insert "$1" 
+      ;;
+    "Open") _open "$1"
+      ;;
+    "Download") _download "$1"
+      ;;
+    "Play") _read_playlist "$1"
+      ;;
+    *) exit 0
+      ;;
+  esac
+}
+
+CLIPBOARD=$(_get_clipboard)
+while getopts 'sgiodp' flag; do
+  case "${flag}" in
+    s) _select ;;
+    g) _actions_general_mode "$CLIPBOARD" ;;
+    i) _insert "$CLIPBOARD" ;;
+    o) _open "$CLIPBOARD" ;;
+    d) _download "$CLIPBOARD" ;;
+    *) exit 1 ;;
+  esac
+done
