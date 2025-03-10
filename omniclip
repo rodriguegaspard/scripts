@@ -62,12 +62,12 @@ insert(){
   case "$CHOICE" in
     "Clipboard") 
       # Reprompts the user if the tag contains spaces, in the future let the delimiter be specific in the config
-      FILE=$(_browse_files "$CLIPBOARDS_DIR" "clipboard")
+      FILE=$(browse_files "$CLIPBOARDS_DIR" "clipboard")
       TAG=$(cat $FILE | tr -s '\n' |  cut -d " " -f 1 | sort -u | dmenu -p "Choose a tag, or create a new one, for the item:")
       echo "$TAG" $1 >> "$FILE"
       ;;
     "Playlist") 
-      FILE=$(_browse_files "$PLAYLISTS_DIR" "playlist")
+      FILE=$(browse_files "$PLAYLISTS_DIR" "playlist")
       echo "$1" >> "$FILE"
       ;;
     *) exit 0
