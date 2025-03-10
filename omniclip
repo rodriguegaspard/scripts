@@ -47,13 +47,19 @@ browse_files(){
 }
 
 select_item(){
-  FILE="$CLIPBOARDS_DIR"/$(ls "$CLIPBOARDS_DIR" | tr -s "\n" | sed "s/.txt//" | sort -u | dmenu -p "Choose a clipboard to browse:").txt
+  FILE="$1"/$(ls "$1" | tr -s "\n" | sed "s/.txt//" | sort -u | dmenu -p "Choose a $2 to browse:").txt
   if [[ -z $(cat "$FILE") ]]; then
     notify-send "No items in the current file."
     exit 1
   fi
   TAG=$(cat $FILE | tr -s '\n' |  cut -d " " -f 1 | sort -u | dmenu -p "Choose a tag to browse:")
-  cat "$FILE" | grep "$TAG" | cut -d " " -f 2- | dmenu | xclip -selection clipboard
+  cat "$FILE" | grep "$TAG" | cut -d " " -f 2- | dmenu
+}
+
+copy(){
+  echo "$1" | xclip -selection primary
+  echo "$1" | xclip -selection clipboard
+  notify-send "$1 has been put into clipboards"
 }
 
 delete_item(){
