@@ -184,28 +184,46 @@ actions_general_mode(){
   esac
 }
 
-actions_browse_mode(){
+actions_browse(){
   CHOICE=$(printf "Clipboard\nPlaylist" | tr -s '\n' | dmenu -p "Which item to browse?")
   case "$CHOICE" in
     "Clipboard") 
-      # Reprompts the user if the tag contains spaces, in the future let the delimiter be specific in the config
-      FILE=$(browse_files "$CLIPBOARDS_DIR" "clipboard")
+      actions_browse_clipboard
       ;;
-    "Playlist") 
-      FILE=$(browse_files "$PLAYLISTS_DIR" "playlist")
+    "Playlist")
+      actions_browse_playlist
       ;;
     *) exit 0
       ;;
   esac
-  ACTION=$(printf "Copy\nOpen\nDownload\nPlay" | tr -s '\n' | dmenu -p "Which action would you like to perform?")
+}
+
+actions_browse_clipboard(){
+ITEM=$(select_item $CLIPBOARDS_DIR "clipboard")
+ACTION=$(printf "Copy\nOpen\nDownload" | tr -s '\n' | dmenu -p "Which action would you like to perform?")
   case "$ACTION" in
-    "Copy") insert "$1"
+    "Copy") copy "$ITEM"
       ;;
-    "Open") open "$1"
+    "Open") open "$ITEM"
       ;;
-    "Download") download "$1"
+    "Download") download "$ITEM"
       ;;
-    "Play") read_playlist "$1"
+    *) exit 0
+      ;;
+  esac
+}
+
+actions_browse_playlist(){
+ITEM=$(select_item $PLAYLISTS_DIR "playlist")
+ACTION=$(printf "Copy\nOpen\nDownload\nPlay" | tr -s '\n' | dmenu -p "Which action would you like to perform?")
+  case "$ACTION" in
+    "Copy") copy "$ITEM"
+      ;;
+    "Open") open "$ITEM"
+      ;;
+    "Download") download "$ITEM"
+      ;;
+    "Play") read_playlist "$ITEM"
       ;;
     *) exit 0
       ;;
@@ -213,10 +231,9 @@ actions_browse_mode(){
 }
 
 usage(){
-  printf "omniclip [-gsiodh]
+  printf "omniclip [-gbiodh]
   -g: general mode. prompts user for save, open, download or play the item currently in the system clipboard.
   -b: browse mode. prompts user for either a clipboard or a playlist, and then for the action to perform.
-  -s: quick select an item from a clipboard or a playlist, and copy the content into the system clipboard.
   -i: quick insert a new item taken from the clipboard into a local clipboard or playlist.
   -o: quick open an item from a local clipboard or playlist. 
   -d: quick download an item from a local clipboard or playlist.
@@ -224,11 +241,10 @@ usage(){
 }
 
 CLIPBOARD=$(get_clipboard)
-while getopts 'gbsiodh' flag; do
+while getopts 'gbiodh' flag; do
   case "${flag}" in
     g) actions_general_mode "$CLIPBOARD" ;;
-    b) actions_browse_mode "$CLIPBOARD" ;;
-    s) select_item ;;
+    b) actions_browse "$CLIPBOARD" ;;
     i) insert "$CLIPBOARD" ;;
     o) open "$CLIPBOARD" ;;
     d) download "$CLIPBOARD" ;;
