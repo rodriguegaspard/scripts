@@ -22,12 +22,12 @@ if [ ! -d "$PLAYLISTS_DIR" ]; then
   mkdir -p "$PLAYLISTS_DIR"
 fi
 
-_create(){
+create(){
   FILENAME=$(echo "" | dmenu -p "Name for new $2:")
   touch $1/"$FILENAME".txt
 }
 
-_browse_files(){
+browse_files(){
   if [[ -z $(ls "$1") ]]; then
     _create $1 $2
   else
@@ -39,7 +39,7 @@ _browse_files(){
   fi
 }
 
-_select(){
+select_item(){
   FILE="$CLIPBOARDS_DIR"/$(ls "$CLIPBOARDS_DIR" | tr -s "\n" | sed "s/.txt//" | sort -u | dmenu -p "Choose a clipboard to browse:").txt
   if [[ -z $(cat "$FILE") ]]; then
     notify-send "No items in the current file."
@@ -49,15 +49,15 @@ _select(){
   cat "$FILE" | grep "$TAG" | cut -d " " -f 2- | dmenu | xclip -selection clipboard
 }
 
-_delete_item(){
+delete_item(){
   exit 1
 }
 
-_delete_file(){
+delete_file(){
   exit 1
 }
 
-_insert(){
+insert(){
   CHOICE=$(printf "Clipboard\nPlaylist" | tr -s '\n' | dmenu -p "Where to insert?")
   case "$CHOICE" in
     "Clipboard") 
@@ -75,15 +75,15 @@ _insert(){
   esac
 }
 
-_read_playlist(){
+read_playlist(){
   exit 1;
 }
 
-_move(){
+move(){
   exit 1
 }
 
-_open(){
+open(){
   if echo "$1" | grep -E '.*\.webm.*|.*\.mkv.*|.*\.gif.*|.*\.mp4.*|.*youtube\.com/watch.*|.*youtube\.com/live.*|.*youtube\.com/playlist.*|.*youtube\.com/shorts.*|.*youtu\.be.*|.*odysee\.com.*|.*twitch\.tv.*'; then
     setsid -f $VIDEO_PROGRAM "$1" >/dev/null 2>&1 
   elif echo "$1" | grep -E '.*\.png.*|.*\.jpg.*|.*\.jpeg.*|.*\.webp.*'; then
@@ -97,7 +97,7 @@ _open(){
   fi
 }
 
-_audio_extractor(){
+audio_extractor(){
   FILENAME="audio_$(date +%s)"
   if echo "$1" | grep -E '.*\.mp3.*|.*\.aac.*|.*\.opus.*|.*\.flac.*|.*\.wav'; then
     wget -P "$DOWNLOAD_DIR" "$1" >/dev/null 2>&1 && notify-send "success"
@@ -108,7 +108,7 @@ _audio_extractor(){
   fi
 }
 
-_video_extractor(){
+video_extractor(){
   FILENAME="video_$(date +%s)"
   if echo "$1" | grep -E '.*\.webm.*|.*\.mkv.*|.*\.gif.*|.*\.mp4.*'; then
     wget -P $DOWNLOAD_DIR "$1" >/dev/null 2>&1 && notify-send "success"
@@ -119,27 +119,27 @@ _video_extractor(){
   fi
 }
 
-_image_extractor(){
+image_extractor(){
   FILENAME="image_$(date +%s).png"
   setsif -f wget $1 -O - | magick - $NAME 
 }
 
-_download(){
+download(){
   PRESET_LIST="Audio\nVideo\nImage"
   PRESET=$(printf $PRESET_LIST | tr -s '\n' |  cut -d " " -f 1 | dmenu -p "Select download preset, or select nothing for downloading using wget:")
   case "$PRESET" in
-    "Audio") _audio_extractor $1
+    "Audio") audio_extractor $1
       ;;
-    "Video") _video_extractor $1
+    "Video") video_extractor $1
       ;;
-    "Picture") _image_extractor $1
+    "Picture") image_extractor $1
       ;;
     *) wget -P $DOWNLOAD_DIR "$1" >/dev/null 2>&1 && notify-send "success"
       ;;
   esac
 }
 
-_get_clipboard(){
+get_clipboard(){
   if [ -z "$(xclip -o -sel clip)" ]
   then
     if [ -z "$(xclip -o)" ]
@@ -155,16 +155,30 @@ _get_clipboard(){
   echo $item | tr -s '\n' ' '
 }
 
-_actions_general_mode(){
-  ACTION=$(printf "Save\nOpen\nDownload\nPlay" | tr -s '\n' | dmenu -p "Which action would you like to perform?")
+actions_general_mode(){
+  ACTION=$(printf "Save\nOpen\nDownload" | tr -s '\n' | dmenu -p "Which action would you like to perform?")
   case "$CHOICE" in
-    "Save")_insert "$1" 
+    "Save") insert "$1"
       ;;
-    "Open") _open "$1"
+    "Open") open "$1"
       ;;
-    "Download") _download "$1"
+    "Download") download "$1"
       ;;
-    "Play") _read_playlist "$1"
+    *) exit 0
+      ;;
+  esac
+}
+
+actions_browse_mode(){
+  ACTION=$(printf "Copy\nOpen\nDownload\nPlay" | tr -s '\n' | dmenu -p "Which action would you like to perform?")
+  case "$CHOICE" in
+    "Copy") insert "$1"
+      ;;
+    "Open") open "$1"
+      ;;
+    "Download") download "$1"
+      ;;
+    "Play") read_playlist "$1"
       ;;
     *) exit 0
       ;;
