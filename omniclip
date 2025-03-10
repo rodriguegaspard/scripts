@@ -5,6 +5,13 @@
 # Clipboards and playlists are simple txt files. Each line represents an item.
 # For clipboards, each item is preceded by a tag.
 # For playlists, no tag system, only one item per line.
+#
+# TO-DO : 
+# General browse mode
+# Playlist mode
+# Different dmenu colors depending on context
+# Delete items or playlists
+# Notifications and error management
 
 # CONFIG
 VIDEO_PROGRAM=mpv
@@ -111,8 +118,8 @@ audio_extractor(){
 video_extractor(){
   FILENAME="video_$(date +%s)"
   if echo "$1" | grep -E '.*\.webm.*|.*\.mkv.*|.*\.gif.*|.*\.mp4.*'; then
-    wget -P $DOWNLOAD_DIR "$1" >/dev/null 2>&1 && notify-send "success"
-  elif yt-dlp -o "$DOWNLOAD_DIR/$FILENAME.%(exts)s" -f bestaudio "$1" >/dev/null; then
+    wget -P "$DOWNLOAD_DIR" "$1" >/dev/null
+  elif yt-dlp -o "$DOWNLOAD_DIR/$FILENAME.%(exts)s" -f bestvideo "$1" >/dev/null; then
     notify-send "success"
   else
     notify-send "failure"
@@ -121,20 +128,22 @@ video_extractor(){
 
 image_extractor(){
   FILENAME="image_$(date +%s).png"
-  setsif -f wget $1 -O - | magick - $NAME 
+  setsid -f wget $1 -O - | magick - $NAME 
 }
 
 download(){
-  PRESET_LIST="Audio\nVideo\nImage"
-  PRESET=$(printf $PRESET_LIST | tr -s '\n' |  cut -d " " -f 1 | dmenu -p "Select download preset, or select nothing for downloading using wget:")
+  PRESET_LIST="Standard\nAudio\nVideo\nImage"
+  PRESET=$(printf $PRESET_LIST | tr -s '\n' |  cut -d " " -f 1 | dmenu -p "Select download preset.")
   case "$PRESET" in
-    "Audio") audio_extractor $1
+    "Standard") wget -P "$DOWNLOAD_DIR" "$1" >/dev/null
       ;;
-    "Video") video_extractor $1
+    "Audio") notify-send "a" && audio_extractor $1
       ;;
-    "Picture") image_extractor $1
+    "Video") notify-send "b" && video_extractor $1
       ;;
-    *) wget -P $DOWNLOAD_DIR "$1" >/dev/null 2>&1 && notify-send "success"
+    "Picture") notify-send "c" && image_extractor $1
+      ;;
+    *) notify-send "failure"
       ;;
   esac
 }
@@ -152,15 +161,15 @@ get_clipboard(){
   else
     item="$(xclip -o -sel clip)"
   fi
-  echo $item | tr -s '\n' ' '
+  echo $item
 }
 
 actions_general_mode(){
-  ACTION=$(printf "Save\nOpen\nDownload" | tr -s '\n' | dmenu -p "Which action would you like to perform?")
-  case "$CHOICE" in
-    "Save") insert "$1"
-      ;;
+  ACTION=$(printf "Open\nSave\nDownload" | tr -s '\n' | dmenu -p "Which action would you like to perform?")
+  case "$ACTION" in
     "Open") open "$1"
+      ;;
+    "Save") insert "$1"
       ;;
     "Download") download "$1"
       ;;
@@ -170,8 +179,20 @@ actions_general_mode(){
 }
 
 actions_browse_mode(){
-  ACTION=$(printf "Copy\nOpen\nDownload\nPlay" | tr -s '\n' | dmenu -p "Which action would you like to perform?")
+  CHOICE=$(printf "Clipboard\nPlaylist" | tr -s '\n' | dmenu -p "Which item to browse?")
   case "$CHOICE" in
+    "Clipboard") 
+      # Reprompts the user if the tag contains spaces, in the future let the delimiter be specific in the config
+      FILE=$(browse_files "$CLIPBOARDS_DIR" "clipboard")
+      ;;
+    "Playlist") 
+      FILE=$(browse_files "$PLAYLISTS_DIR" "playlist")
+      ;;
+    *) exit 0
+      ;;
+  esac
+  ACTION=$(printf "Copy\nOpen\nDownload\nPlay" | tr -s '\n' | dmenu -p "Which action would you like to perform?")
+  case "$ACTION" in
     "Copy") insert "$1"
       ;;
     "Open") open "$1"
@@ -196,7 +217,7 @@ usage(){
   -h: prints this help section"
 }
 
-CLIPBOARD=$(_get_clipboard)
+CLIPBOARD=$(get_clipboard)
 while getopts 'gbsiodh' flag; do
   case "${flag}" in
     g) actions_general_mode "$CLIPBOARD" ;;
