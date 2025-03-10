@@ -1,12 +1,5 @@
 #!/bin/sh
 # Clipboard manager, saves strings in a file (and asks for a tag to sort it correctly), and performs several actions on then at the user request (save to clipboard, save to local playlist, save locally, open). Requires dmenu. 
-# Usage : omniclip [-s|-i]
-# SELECT MODE (-s) : Access a local clipboard or a playlist and fuzzy search using tags, then either [s]ave locally, [d]elete item, [o]pen item, [m]ove item to other file.
-# When selecting a playlist, extra options are available : [D]elete the whole playlist, [p]lay all items in sequence and [P]ause the playlist.
-# GENERAL MODE (-g) : Access the system clipboard and asks user if they want to save the item to a clipboard, open it or download it.
-# INSERT MODE (-i) : Prompt the user to select if they want to save to either a clipboard or a playlist, choose a file and a tag, and saves the item.
-# OPEN ITEM (-o) : Opens the current item with the appropriate program, without saving it in a file.
-# DOWNLOAD ITEM (-d) : Downloads the current item without saving it in a file.
 
 # FILE SYNTAX
 # Clipboards and playlists are simple txt files. Each line represents an item.
@@ -178,14 +171,27 @@ _actions_general_mode(){
   esac
 }
 
+usage(){
+  printf "omniclip [-gsiodh]
+  -g: general mode. prompts user for save, open, download or play the item currently in the system clipboard.
+  -b: browse mode. prompts user for either a clipboard or a playlist, and then for the action to perform.
+  -s: quick select an item from a clipboard or a playlist, and copy the content into the system clipboard.
+  -i: quick insert a new item taken from the clipboard into a local clipboard or playlist.
+  -o: quick open an item from a local clipboard or playlist. 
+  -d: quick download an item from a local clipboard or playlist.
+  -h: prints this help section"
+}
+
 CLIPBOARD=$(_get_clipboard)
-while getopts 'sgiodp' flag; do
+while getopts 'gbsiodh' flag; do
   case "${flag}" in
-    s) _select ;;
-    g) _actions_general_mode "$CLIPBOARD" ;;
-    i) _insert "$CLIPBOARD" ;;
-    o) _open "$CLIPBOARD" ;;
-    d) _download "$CLIPBOARD" ;;
+    g) actions_general_mode "$CLIPBOARD" ;;
+    b) actions_browse_mode "$CLIPBOARD" ;;
+    s) select_item ;;
+    i) insert "$CLIPBOARD" ;;
+    o) open "$CLIPBOARD" ;;
+    d) download "$CLIPBOARD" ;;
+    h) usage ;;
     *) exit 1 ;;
   esac
 done
