@@ -1,6 +1,0 @@
-#!/bin/sh
-# Access a dmenu interface in order to copy into clipboard special characters and kaomojis
-
-FILENAME="/home/rosco/.config/kaomojis.txt" # Format is for each line : tag/name kaomoji. Avoid spaces in the tags/names.
-TAG=$(cat $FILENAME | tr -s '\n' |  cut -d " " -f 1 | sort -u | dmenu -p "Choose a tag to browse:")
-cat "$FILENAME" | grep "$TAG" | cut -d " " -f 2- | dmenu | xclip -selection clipboard
