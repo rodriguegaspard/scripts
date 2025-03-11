@@ -7,11 +7,12 @@
 # For playlists, no tag system, only one item per line.
 #
 # TO-DO : 
-# General browse mode
 # Playlist mode
 # Different dmenu colors depending on context
 # Delete items or playlists
 # Notifications and error management
+
+set -e
 
 # CONFIG
 VIDEO_PROGRAM=mpv
@@ -32,11 +33,12 @@ fi
 create(){
   FILENAME=$(echo "" | dmenu -p "Name for new $2:")
   touch $1/"$FILENAME".txt
+  echo $1/"$FILENAME".txt
 }
 
 browse_files(){
   if [[ -z $(ls "$1") ]]; then
-    _create $1 $2
+    echo $(create $1 $2)
   else
     FILE=$(ls "$1" | tr -s "\n" | sed "s/.txt//" | sort -u | dmenu -p "Choose a $2 to browse, or create a new one by giving it a name:")
     if ! ls "$1" | grep -q "$FILE" ; then
@@ -49,7 +51,7 @@ browse_files(){
 select_item(){
   FILE="$1"/$(ls "$1" | tr -s "\n" | sed "s/.txt//" | sort -u | dmenu -p "Choose a $2 to browse:").txt
   if [[ -z $(cat "$FILE") ]]; then
-    notify-send "No items in the current file."
+    notify-send -u critical -t 2000 "ERROR: No items in the current file"
     exit 1
   fi
   TAG=$(cat $FILE | tr -s '\n' |  cut -d " " -f 1 | sort -u | dmenu -p "Choose a tag to browse:")
@@ -59,7 +61,7 @@ select_item(){
 copy(){
   echo "$1" | xclip -selection primary
   echo "$1" | xclip -selection clipboard
-  notify-send "$1 has been put into clipboards"
+  notify-send -u normal -t 2000 "Copied $1 into the clipboard"
 }
 
 delete_item(){
@@ -76,8 +78,11 @@ insert(){
     "Clipboard") 
       # Reprompts the user if the tag contains spaces, in the future let the delimiter be specific in the config
       FILE=$(browse_files "$CLIPBOARDS_DIR" "clipboard")
-      TAG=$(cat $FILE | tr -s '\n' |  cut -d " " -f 1 | sort -u | dmenu -p "Choose a tag, or create a new one, for the item:")
-      echo "$TAG" $1 >> "$FILE"
+      while
+        TAG=$(cat $FILE | tr -s '\n' |  cut -d " " -f 1 | sort -u | dmenu -p "Choose a tag, or create a new one, for the item:")
+        [[ -z $TAG || $TAG == *" "* ]]
+      do notify-send -u critical -t 2000 "ERROR: The tag must not be empty or contain spaces"; done
+      echo "$TAG $1" >> "$FILE"
       ;;
     "Playlist") 
       FILE=$(browse_files "$PLAYLISTS_DIR" "playlist")
@@ -89,7 +94,14 @@ insert(){
 }
 
 read_playlist(){
-  exit 1;
+  FILE=$(browse_files $PLAYLISTS_DIR "playlist")
+  if [ -z $(cat "$FILE") ]; then
+    notify-send -u critical -t 2000 "ERROR: Playlist is empty"
+  else
+    while IFS= read -r line; do
+      open $line
+    done < "$FILE"
+  fi
 }
 
 move(){
@@ -106,50 +118,50 @@ open(){
   elif echo "$1" | grep -E '.*\.mp3.*|.*\.aac.*|.*\.opus.*|.*\.flac.*'; then
     setsid -f "$VIDEO_PROGRAM" "$1" >/dev/null 2>&1
   else
-    setsid -f "$BROWSER" "$1" >/dev/null 2>&1
+    setsid -f "$BROWSER" "$1" || notify-send -u critical -t 2000 "ERROR: Could not read $1"
   fi
 }
 
 audio_extractor(){
   FILENAME="audio_$(date +%s)"
   if echo "$1" | grep -E '.*\.mp3.*|.*\.aac.*|.*\.opus.*|.*\.flac.*|.*\.wav'; then
-    wget -P "$DOWNLOAD_DIR" "$1" >/dev/null 2>&1 && notify-send "success"
+    wget -P "$DOWNLOAD_DIR" "$1" >/dev/null  && notify-send -u normal -t 2000 "Audio file successfully downloaded"
   elif yt-dlp -o "$DOWNLOAD_DIR/$FILENAME.%(ext)s" -f bestaudio "$1" >/dev/null; then
-    notify-send "success"
+    notify-send -u normal -t 2000 "Audio file successfully downloaded"
   else
-    notify-send "failure"
+    notify-send -u critical -t 2000 "ERROR: Audio file $1 could not be downloaded"
   fi
 }
 
 video_extractor(){
   FILENAME="video_$(date +%s)"
   if echo "$1" | grep -E '.*\.webm.*|.*\.mkv.*|.*\.gif.*|.*\.mp4.*'; then
-    wget -P "$DOWNLOAD_DIR" "$1" >/dev/null
+    wget -P "$DOWNLOAD_DIR" "$1" >/dev/null && notify-send -u normal -t 2000 "Video file successfully downloaded"
   elif yt-dlp -o "$DOWNLOAD_DIR/$FILENAME.%(exts)s" -f bestvideo "$1" >/dev/null; then
-    notify-send "success"
+    notify-send -u normal -t 2000 "Video file successfully downloaded using yt-dlp"
   else
-    notify-send "failure"
+    notify-send -u critical -t 2000 "ERROR: Video file $1 could not be downloaded"
   fi
 }
 
 image_extractor(){
   FILENAME="image_$(date +%s).png"
-  setsid -f wget $1 -O - | magick - $NAME 
+  setsid -f wget $1 -O - | magick - $NAME || notify-send -u critical -t 2000 "ERROR: Image file $1 could not be downloaded"
 }
 
 download(){
   PRESET_LIST="Standard\nAudio\nVideo\nImage"
-  PRESET=$(printf $PRESET_LIST | tr -s '\n' |  cut -d " " -f 1 | dmenu -p "Select download preset.")
+  PRESET=$(printf $PRESET_LIST | tr -s '\n' |  cut -d " " -f 1 | dmenu -p "Select download preset")
   case "$PRESET" in
     "Standard") wget -P "$DOWNLOAD_DIR" "$1" >/dev/null
       ;;
-    "Audio") notify-send "a" && audio_extractor $1
+    "Audio") audio_extractor $1
       ;;
-    "Video") notify-send "b" && video_extractor $1
+    "Video") video_extractor $1
       ;;
-    "Picture") notify-send "c" && image_extractor $1
+    "Picture") image_extractor $1
       ;;
-    *) notify-send "failure"
+    *) notify-send -u critical -t 2000 "ERROR: [$PRESET] is not a valid download preset"
       ;;
   esac
 }
@@ -159,8 +171,7 @@ get_clipboard(){
   then
     if [ -z "$(xclip -o)" ]
     then
-      notify-send -t 1500 -u critical "ERROR" "No items found on clipboard." 
-      exit 1
+      notify-send -t 2000 -u critical "ERROR" "No items found on clipboard" && exit 1
     else
       item="$(xclip -o)"
     fi
@@ -171,7 +182,7 @@ get_clipboard(){
 }
 
 actions_general_mode(){
-  ACTION=$(printf "Open\nSave\nDownload" | tr -s '\n' | dmenu -p "Which action would you like to perform?")
+  ACTION=$(printf "Open\nSave\nDownload" | tr -s '\n' | dmenu -p "Which action would you like to perform for item [$1]?")
   case "$ACTION" in
     "Open") open "$1"
       ;;
@@ -191,7 +202,7 @@ actions_browse(){
       actions_browse_clipboard
       ;;
     "Playlist")
-      actions_browse_playlist
+      read_playlist
       ;;
     *) exit 0
       ;;
@@ -199,31 +210,14 @@ actions_browse(){
 }
 
 actions_browse_clipboard(){
-ITEM=$(select_item $CLIPBOARDS_DIR "clipboard")
-ACTION=$(printf "Copy\nOpen\nDownload" | tr -s '\n' | dmenu -p "Which action would you like to perform?")
+  ITEM=$(select_item $CLIPBOARDS_DIR "clipboard")
+  ACTION=$(printf "Copy\nOpen\nDownload" | tr -s '\n' | dmenu -p "Which action would you like to perform?")
   case "$ACTION" in
     "Copy") copy "$ITEM"
       ;;
     "Open") open "$ITEM"
       ;;
     "Download") download "$ITEM"
-      ;;
-    *) exit 0
-      ;;
-  esac
-}
-
-actions_browse_playlist(){
-ITEM=$(select_item $PLAYLISTS_DIR "playlist")
-ACTION=$(printf "Copy\nOpen\nDownload\nPlay" | tr -s '\n' | dmenu -p "Which action would you like to perform?")
-  case "$ACTION" in
-    "Copy") copy "$ITEM"
-      ;;
-    "Open") open "$ITEM"
-      ;;
-    "Download") download "$ITEM"
-      ;;
-    "Play") read_playlist "$ITEM"
       ;;
     *) exit 0
       ;;
@@ -237,7 +231,7 @@ usage(){
   -i: quick insert a new item taken from the clipboard into a local clipboard or playlist.
   -o: quick open an item from a local clipboard or playlist. 
   -d: quick download an item from a local clipboard or playlist.
-  -h: prints this help section"
+  -h: prints this help section."
 }
 
 CLIPBOARD=$(get_clipboard)
