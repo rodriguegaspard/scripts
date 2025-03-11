@@ -137,7 +137,7 @@ video_extractor(){
   FILENAME="video_$(date +%s)"
   if echo "$1" | grep -E '.*\.webm.*|.*\.mkv.*|.*\.gif.*|.*\.mp4.*'; then
     wget -P "$DOWNLOAD_DIR" "$1" >/dev/null && notify-send -u normal -t 2000 "Video file successfully downloaded"
-  elif yt-dlp -o "$DOWNLOAD_DIR/$FILENAME.%(exts)s" -f bestvideo "$1" >/dev/null; then
+  elif yt-dlp -o "$DOWNLOAD_DIR/$FILENAME.%(exts)s" -f bestvideo+bestaudio "$1" >/dev/null; then
     notify-send -u normal -t 2000 "Video file successfully downloaded using yt-dlp"
   else
     notify-send -u critical -t 2000 "ERROR: Video file $1 could not be downloaded"
