@@ -1,5 +1,5 @@
 #!/bin/sh
-# Prints the battery level when under >20%
+# Prints the battery level and send a notification when appropriate.
 
 battery_level=$(acpi -b | grep -Po '[0-9]+(?=%)' | awk '{ sum += $1 }; END {print sum}')
 if [ "$battery_level" -le 20 ]
