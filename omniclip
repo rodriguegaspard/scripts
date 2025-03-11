@@ -161,7 +161,7 @@ download(){
       ;;
     "Picture") image_extractor $1
       ;;
-    *) notify-send -u critical -t 2000 "ERROR: [$PRESET] is not a valid download preset"
+    *) notify-send -u critical -t 2000 "ERROR: Preset does not exist"
       ;;
   esac
 }
@@ -182,7 +182,7 @@ get_clipboard(){
 }
 
 actions_general_mode(){
-  ACTION=$(printf "Open\nSave\nDownload" | tr -s '\n' | dmenu -p "Which action would you like to perform for item [$1]?")
+  ACTION=$(printf "Open\nSave\nDownload" | tr -s '\n' | dmenu -p "Which action would you like to perform for item $1?")
   case "$ACTION" in
     "Open") open "$1"
       ;;
