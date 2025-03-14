@@ -29,11 +29,11 @@ sync_general(){
 }
 
 usage(){
-  printf("storagesync [-abgh]
+printf "storagesync [-abgh]
 -a: audio mode.
 -b: books mode.
 -g: general mode.
--h: prints this help section.") 
+-h: prints this help section."
 }
 
 while getopts 'abgh' flag; do
