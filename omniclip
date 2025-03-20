@@ -236,11 +236,11 @@ usage(){
 
 while getopts 'gbiodh' flag; do
   case "${flag}" in
-    g) actions_general_mode $(get_clipboard) ;;
+    g) actions_general_mode "$(get_clipboard)" ;;
     b) actions_browse ;;
-    i) insert $(get_clipboard) ;;
-    o) open $(get_clipboard) ;;
-    d) download $(get_clipboard) ;;
+    i) insert "$(get_clipboard)" ;;
+    o) open "$(get_clipboard)" ;;
+    d) download "$(get_clipboard)" ;;
     h) usage ;;
     *) exit 1 ;;
   esac
