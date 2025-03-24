@@ -110,15 +110,15 @@ move(){
 
 open(){
   if echo "$1" | grep -E '.*\.webm.*|.*\.mkv.*|.*\.gif.*|.*\.mp4.*|.*youtube\.com/watch.*|.*youtube\.com/live.*|.*youtube\.com/playlist.*|.*youtube\.com/shorts.*|.*youtu\.be.*|.*odysee\.com.*|.*twitch\.tv.*'; then
-    setsid -f $VIDEO_PROGRAM "$1" >/dev/null 2>&1 
+    $VIDEO_PROGRAM "$1" >/dev/null 2>&1 
   elif echo "$1" | grep -E '.*\.png.*|.*\.jpg.*|.*\.jpeg.*|.*\.webp.*'; then
     curl -sL "$1" > "/tmp/$(echo "$1" | sed "s/.*\///;s/%20/ /g")" && "$IMAGE_PROGRAM" "/tmp/$(echo "$1" | sed "s/.*\///;s/%20/ /g")"  >/dev/null 2>&1 &
   elif echo "$1" | grep -E '.*\.pdf.*|.*\.cbz.*|.*\.cbr.*|.*\.epub.*|.*\.mobi.*'; then
     curl -sL "$1" > "/tmp/$(echo "$1" | sed "s/.*\///;s/%20/ /g")" && "$PDF_PROGRAM" "/tmp/$(echo "$1" | sed "s/.*\///;s/%20/ /g")"  >/dev/null 2>&1 &
   elif echo "$1" | grep -E '.*\.mp3.*|.*\.aac.*|.*\.opus.*|.*\.flac.*'; then
-    setsid -f "$VIDEO_PROGRAM" "$1" >/dev/null 2>&1
+    "$VIDEO_PROGRAM" "$1" >/dev/null 2>&1
   else
-    setsid -f "$BROWSER" "$1" || notify-send -u critical -t 2000 "ERROR: Could not read $1"
+    "$BROWSER" "$1" || notify-send -u critical -t 2000 "ERROR: Could not read $1"
   fi
 }
 
