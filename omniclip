@@ -100,7 +100,11 @@ read_playlist(){
   else
     while IFS= read -r line; do
       open $line
+      sed -i 1d $FILE
     done < "$FILE"
+  fi
+  if [ -z $(cat "$FILE") ]; then
+    rm $FILE
   fi
 }
 
