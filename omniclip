@@ -231,16 +231,22 @@ usage(){
   -i: quick insert a new item taken from the clipboard into a local clipboard or playlist.
   -o: quick open an item from a local clipboard or playlist. 
   -d: quick download an item from a local clipboard or playlist.
+  -I: quick insert a new item given as first argument into a local clipboard or playlist.
+  -O: quick open an item given as first argument. 
+  -D: quick download an item given as first argument
   -h: prints this help section."
 }
 
-while getopts 'gbiodh' flag; do
+while getopts 'gbiodIODh' flag; do
   case "${flag}" in
     g) actions_general_mode "$(get_clipboard)" ;;
     b) actions_browse ;;
     i) insert "$(get_clipboard)" ;;
     o) open "$(get_clipboard)" ;;
     d) download "$(get_clipboard)" ;;
+    I) insert "$2" ;;
+    O) open "$2" ;;
+    D) download "$2" ;;
     h) usage ;;
     *) exit 1 ;;
   esac
