@@ -31,3 +31,10 @@ storagesync [-abgh]
  -g: general mode
  -h: prints this help section
 ```
+## vpn
+Simple utility to toggle a WireGuard interface through nmcli.
+```bash
+vpn [-ht]
+-t: toggles the vpn
+-h: print this help section
+```

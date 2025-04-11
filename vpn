@@ -1,0 +1,24 @@
+#!/bin/sh
+
+toggle(){
+  # check if wg is an active connection
+  if nmcli dev status | grep -q "wg"; then
+    nmcli con down wg > /dev/null && notify-send -u low -t 2000 "VPN is off"
+  else
+    nmcli con up wg > /dev/null && notify-send -u low -t 2000 "VPN is on"
+  fi
+}
+
+usage(){
+printf "vpn [-ht]
+-t: toggles the vpn
+-h: print this help section" 
+}
+
+while getopts 'ht' flag; do
+  case "${flag}" in
+    t) toggle ;;
+    h) usage ;;
+  esac
+done
+
