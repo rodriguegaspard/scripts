@@ -121,6 +121,8 @@ open(){
     curl -sL "$1" > "/tmp/$(echo "$1" | sed "s/.*\///;s/%20/ /g")" && "$PDF_PROGRAM" "/tmp/$(echo "$1" | sed "s/.*\///;s/%20/ /g")"  >/dev/null 2>&1 &
   elif echo "$1" | grep -E '.*\.mp3.*|.*\.aac.*|.*\.opus.*|.*\.flac.*'; then
     "$VIDEO_PROGRAM" "$1" >/dev/null 2>&1
+  elif echo "$1" | grep -E '.*x\.com.*'; then
+    "$BROWSER" $(echo "$1" | sed 's/x.com/nitter.poast.org/g')
   else
     "$BROWSER" "$1" || notify-send -u critical -t 2000 "ERROR: Could not read $1"
   fi
