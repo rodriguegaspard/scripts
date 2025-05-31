@@ -1,11 +1,11 @@
 #!/bin/sh
 
 toggle(){
-  # check if wg is an active connection
-  if nmcli dev status | grep -q "wg"; then
-    nmcli con down wg > /dev/null && notify-send -u low -t 2000 "VPN is off"
+  # check if vpn is an active connection
+  if nmcli con show --active | grep -q "vpn"; then
+    nmcli con down vpn > /dev/null && notify-send -u low -t 2000 "VPN is off"
   else
-    nmcli con up wg > /dev/null && notify-send -u low -t 2000 "VPN is on"
+    nmcli con up vpn > /dev/null && notify-send -u low -t 2000 "VPN is on"
   fi
 }
 
