@@ -5,12 +5,6 @@
 # Clipboards and playlists are simple txt files. Each line represents an item.
 # For clipboards, each item is preceded by a tag.
 # For playlists, no tag system, only one item per line.
-#
-# TO-DO : 
-# Playlist mode
-# Different dmenu colors depending on context
-# Delete items or playlists
-# Notifications and error management
 
 set -e
 
