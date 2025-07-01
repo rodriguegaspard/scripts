@@ -182,7 +182,8 @@ get_clipboard(){
 }
 
 actions_general_mode(){
-  ACTION=$(printf "Open\nSave\nDownload" | tr -s '\n' | dmenu -p "Which action would you like to perform for item $1?")
+  TRUNCATED_STRING=$([[ ${#1} -gt 20 ]] && echo "${1:0:18}.." || echo "$1")
+  ACTION=$(printf "Open\nSave\nDownload" | tr -s '\n' | dmenu -p "Which action would you like to perform for item $TRUNCATED_STRING?")
   case "$ACTION" in
     "Open") open "$1"
       ;;
