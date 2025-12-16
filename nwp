@@ -1,0 +1,16 @@
+#!/bin/sh
+set -euo pipefail
+
+feh --bg-fill --randomize ~/pictures/wallpapers/*
+
+usage(){
+printf "script [-h]
+-h: print this help section."
+}
+
+while getopts 'h' flag; do
+  case "${flag}" in
+    h) usage ;;
+  esac
+done
+
