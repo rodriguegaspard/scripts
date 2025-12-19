@@ -16,15 +16,16 @@ sync_books(){
 sync_general(){
   echo "Synchronizing files.."
   sudo rsync -r --progress --ignore-existing "$HOME"/files/bank/* /mnt/storage/files/documents/bank
-  sudo rsync -r --progress --ignore-existing "$HOME"/files/medical/* /mnt/storage/files/documents/medical
   sudo rsync -r --progress --ignore-existing "$HOME"/files/school/* /mnt/storage/files/documents/school
   sudo rsync -r --progress --ignore-existing "$HOME"/files/identity/* /mnt/storage/files/documents/identity
   sudo rsync -r --progress --ignore-existing "$HOME"/files/visa/* /mnt/storage/files/documents/visa
-  sudo rsync -r --progress --ignore-existing "$HOME"/files/docs/* /mnt/storage/files/documents/docs
   sudo rsync -r --progress --ignore-existing "$HOME"/files/invoices/* /mnt/storage/files/documents/invoices
   sudo rsync -r --progress --ignore-existing "$HOME"/files/notes/* /mnt/storage/files/documents/notes
   echo "Synchronizing pictures.."
-  sudo rsync -r --progress --ignore-existing "$HOME"/pictures/photos /mnt/storage/pictures/photos
+  sudo rsync -r --progress --ignore-existing "$HOME"/pictures/photos /mnt/storage/photos
+  echo "Synchronizing passwords.."
+    sudo rsync -r --progress "$HOME"/.password-store /mnt/storage/pass
+  echo "End of sync."
 }
 
 usage(){
