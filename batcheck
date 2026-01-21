@@ -1,0 +1,78 @@
+#!/bin/sh
+
+LOW_BATTERY=20
+HIGH_BATTERY=80
+
+apply_screen_tint() {
+    local output=$(xrandr | grep -w connected | grep primary | cut -d' ' -f1)
+    
+    if [ -z "$output" ]; then
+        output=$(xrandr | grep -w connected | head -1 | cut -d' ' -f1)
+    fi
+    
+    if [ -z "$output" ]; then
+        echo "ERROR: No connected display found"
+        exit 1
+    fi
+    
+    case "$1" in
+        "low")
+            xrandr --output "$output" --gamma 1.5:0.8:0.8 --brightness 0.9
+            ;;
+        "high")
+            xrandr --output "$output" --gamma 0.8:1.2:0.8 --brightness 1.0
+            ;;
+        "normal")
+            xrandr --output "$output" --gamma 1:1:1 --brightness 1.0
+            ;;
+        *)
+            xrandr --output "$output" --gamma 1:1:1 --brightness 1.0
+            ;;
+    esac
+}
+
+get_battery_info() {
+    if command -v acpi &> /dev/null; then
+        battery_info=$(acpi -b 2>/dev/null)
+        if [[ $battery_info == *"Discharging"* ]]; then
+            state="Discharging"
+        elif [[ $battery_info == *"Charging"* ]]; then
+            state="Charging"
+        else
+            state="Unknown"
+        fi
+        percentage=$(echo "$battery_info" | grep -oP "\d+(?=%)" | head -1)
+        echo "$percentage|$state"
+    else
+        echo "ERROR: acpi not found"
+        return 1
+    fi
+}
+
+main() {
+    battery_data=$(get_battery_info)
+    
+    if [ -n "$battery_data" ] && [ "$battery_data" != "" ]; then
+        percentage=$(echo "$battery_data" | cut -d'|' -f1)
+        state=$(echo "$battery_data" | cut -d'|' -f2)
+        
+        if [ "$percentage" -lt 0 ] 2>/dev/null || [ "$percentage" -gt 100 ] 2>/dev/null; then
+            echo "ERROR: Invalid percentage: $percentage"
+            return 1
+        fi
+        
+        echo "Battery: ${percentage}% - ${state}"
+        
+        if [ "$state" = "Discharging" ] && [ "$percentage" -le "$LOW_BATTERY" ]; then
+            apply_screen_tint "low"
+        elif [ "$state" = "Charging" ] && [ "$percentage" -ge "$HIGH_BATTERY" ]; then
+            apply_screen_tint "high"
+        else
+            apply_screen_tint "normal"
+        fi
+    else
+        echo "ERROR: Could not get battery info"
+    fi
+}
+
+main "$@"
