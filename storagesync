@@ -9,7 +9,7 @@ sync_audio(){
 
 sync_books(){
   echo "Synchronizing books.."
-  sudo rsync -r --progress --ignore-existing "$HOME"/files/books/* /mnt/storage/files/books
+  sudo rsync -rvt --whole-file --inplace --no-compress --info=progress2 --ignore-existing "$HOME"/files/books/* /mnt/storage
   echo "End of sync."
 }
 
