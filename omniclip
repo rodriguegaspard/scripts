@@ -52,7 +52,8 @@ quick_select_clipboard(){
     notify-send -u critical -t 2000 "ERROR: No tag specified"
     exit 1
   fi
-  cat "$FILE" | grep "$2" | cut -d " " -f 2- | dmenu
+  ITEM=$(cat "$FILE" | grep "$2" | cut -d " " -f 2- | dmenu)
+  copy "$ITEM"
 }
 
 select_item(){
