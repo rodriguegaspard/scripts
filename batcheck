@@ -20,7 +20,7 @@ apply_screen_tint() {
             xrandr --output "$output" --gamma 1.5:0.8:0.8 --brightness 0.9
             ;;
         "high")
-            xrandr --output "$output" --gamma 0.8:1.2:0.8 --brightness 1.0
+            xrandr --output "$output" --gamma 0.8:1.2:1 --brightness 1.1
             ;;
         "normal")
             xrandr --output "$output" --gamma 1:1:1 --brightness 1.0
