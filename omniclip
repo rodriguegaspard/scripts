@@ -101,19 +101,50 @@ insert(){
   esac
 }
 
-read_playlist(){
-  FILE=$(browse_files $PLAYLISTS_DIR "playlist")
-  if [ -z $(cat "$FILE") ]; then
+read_playlist() {
+  FILE="$1"
+  MODE="${2:-play}"
+  if [ -z "$FILE" ] || [ ! -f "$FILE" ]; then
+    notify-send -u critical -t 2000 "ERROR: No playlist specified."
+    return 1
+  fi
+  if [ ! -s "$FILE" ]; then
     notify-send -u critical -t 2000 "ERROR: Playlist is empty"
-  else
-    while IFS= read -r line; do
-      open $line
-      sed -i 1d $FILE
-    done < "$FILE"
+    return 1
   fi
-  if [ -z $(cat "$FILE") ]; then
-    rm $FILE
-  fi
+  case "$MODE" in
+    "play")
+      while IFS= read -r line || [ -n "$line" ]; do
+        open "$line"
+      done < "$FILE"
+      ;;
+    "shuffle")
+      if command -v shuf >/dev/null 2>&1; then
+        shuf "$FILE" | while IFS= read -r line || [ -n "$line" ]; do
+          open "$line"
+        done
+      else
+        awk 'BEGIN{srand();} {printf("%06d\t%s\n", rand()*1000000, $0)}' "$FILE" | \
+          sort | cut -f2- | \
+          while IFS= read -r line || [ -n "$line" ]; do
+            open "$line"
+          done
+      fi
+      ;;
+    "consume")
+      tmpfile=$(mktemp /tmp/playlist.XXXXXX)
+      cp "$FILE" "$tmpfile"
+      while IFS= read -r line || [ -n "$line" ]; do
+        open "$line"
+      done < "$tmpfile"
+      rm -f "$tmpfile" "$FILE"
+      ;;
+    *)
+      notify-send -u critical -t 2000 "ERROR: Unknown mode"
+      return 1
+      ;;
+  esac
+  return 0
 }
 
 move(){
@@ -217,7 +248,7 @@ actions_browse(){
       actions_browse_clipboard
       ;;
     "Playlist")
-      read_playlist
+      actions_browse_playlist
       ;;
     *) exit 0
       ;;
@@ -233,6 +264,21 @@ actions_browse_clipboard(){
     "Open") open "$ITEM"
       ;;
     "Download") download "$ITEM"
+      ;;
+    *) exit 0
+      ;;
+  esac
+}
+
+actions_browse_playlist(){
+  ITEM=$(browse_files $PLAYLISTS_DIR "playlist")
+  ACTION=$(printf "Play\nShuffle\nConsume" | tr -s '\n' | dmenu -p "Which action would you like to perform?")
+  case "$ACTION" in
+    "Play") read_playlist "$ITEM"
+      ;;
+    "Shuffle") read_playlist "$ITEM" "shuffle"
+      ;;
+    "Consume") read_playlist "$ITEM" "consume"
       ;;
     *) exit 0
       ;;
