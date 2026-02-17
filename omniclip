@@ -179,13 +179,14 @@ audio_extractor(){
 }
 
 video_extractor(){
-  FILENAME="video_$(date +%s)"
+  TIMESTAMP=$(date +%s)
+  FILENAME="video_${TIMESTAMP}"
   if echo "$1" | grep -E '.*\.webm.*|.*\.mkv.*|.*\.gif.*|.*\.mp4.*'; then
-    wget -P "$DOWNLOAD_DIR" "$1" >/dev/null && notify-send -u normal -t 2000 "Video file successfully downloaded"
-  elif yt-dlp -o "$DOWNLOAD_DIR/$FILENAME.%(exts)s" "$1" >/dev/null; then
-    notify-send -u normal -t 2000 "Video file successfully downloaded using yt-dlp"
+    wget -P "$DOWNLOAD_DIR" "$1" >/dev/null && notify-send -u normal -t 2000 "$1 successfully downloaded"
+  elif yt-dlp -o "$DOWNLOAD_DIR/%(title)s - %(upload_date)s.%(ext)s" "$1" >/dev/null; then
+    notify-send -u normal -t 2000 "$1 successfully downloaded using yt-dlp"
   else
-    notify-send -u critical -t 2000 "ERROR: Video file $1 could not be downloaded"
+    notify-send -u critical -t 2000 "ERROR: $1 could not be downloaded"
   fi
 }
 
