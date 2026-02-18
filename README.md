@@ -38,3 +38,7 @@ vpn [-ht]
 -t: toggles the vpn
 -h: print this help section
 ```
+## nwp
+Picks a random wallpaper from my wallpaper collection with feh. Enough said.
+## openfilepicker
+Opens a new instance of yazi in the terminal. I use this as a dwm macro.
