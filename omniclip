@@ -104,6 +104,8 @@ insert(){
 read_playlist() {
   FILE="$1"
   MODE="${2:-play}"
+  ITEMCOUNT=$(wc -l < "$FILE")
+  INCREMENT=0
   if [ -z "$FILE" ] || [ ! -f "$FILE" ]; then
     notify-send -u critical -t 2000 "ERROR: No playlist specified."
     return 1
@@ -114,30 +116,28 @@ read_playlist() {
   fi
   case "$MODE" in
     "play")
-      while IFS= read -r line || [ -n "$line" ]; do
-        open "$line"
+      while IFS= read -r LINE || [ -n "$LINE" ]; do
+        INCREMENT=$((INCREMENT + 1))
+        notify-send -u normal -t 2000 "Playing $INCREMENT/$ITEMCOUNT"
+        open "$LINE"
       done < "$FILE"
       ;;
     "shuffle")
-      if command -v shuf >/dev/null 2>&1; then
-        shuf "$FILE" | while IFS= read -r line || [ -n "$line" ]; do
-        open "$line"
-      done
-    else
-      awk 'BEGIN{srand();} {printf("%06d\t%s\n", rand()*1000000, $0)}' "$FILE" | \
-        sort | cut -f2- | \
-        while IFS= read -r line || [ -n "$line" ]; do
-          open "$line"
-        done
-      fi
+      shuf "$FILE" | while IFS= read -r LINE || [ -n "$LINE" ]; do
+        INCREMENT=$((INCREMENT + 1))
+        notify-send -u normal -t 2000 "Playing $INCREMENT/$ITEMCOUNT"
+        open "$LINE"
+      done < "$FILE"
       ;;
     "consume")
       tmpfile=$(mktemp /tmp/playlist.XXXXXX)
-      cp "$FILE" "$tmpfile"
-      while IFS= read -r line || [ -n "$line" ]; do
-        open "$line"
-      done < "$tmpfile"
-      rm -f "$tmpfile" "$FILE"
+      cp "$FILE" "$TMPFILE"
+      while IFS= read -r LINE || [ -n "$LINE" ]; do
+        INCREMENT=$((INCREMENT + 1))
+        notify-send -u normal -t 2000 "Playing $INCREMENT/$ITEMCOUNT"
+        open "$LINE"
+      done < "$TMPFILE"
+      rm -f "$TMPFILE" "$FILE"
       ;;
     *)
       notify-send -u critical -t 2000 "ERROR: Unknown mode"
