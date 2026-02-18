@@ -1,11 +1,18 @@
 #!/bin/sh
 
 toggle(){
-  # check if vpn is an active connection
   if nmcli con show --active | grep -q "vpn"; then
-    nmcli con down vpn > /dev/null && notify-send -u low -t 2000 "VPN is off"
+    if nmcli con down vpn > /dev/null; then
+      notify-send -u low -t 2000 "VPN is off"
+    else
+      notify-send -u critical -t 2000 "ERROR: VPN could not be turned off"
+    fi
   else
-    nmcli con up vpn > /dev/null && notify-send -u low -t 2000 "VPN is on"
+    if nmcli con up vpn > /dev/null; then
+      notify-send -u low -t 2000 "VPN is on"
+    else
+      notify-send -u critical -t 2000 "ERROR: VPN could not be turned on"
+    fi
   fi
 }
 
