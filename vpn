@@ -3,9 +3,9 @@
 toggle(){
   # check if vpn is an active connection
   if nmcli con show --active | grep -q "vpn"; then
-    nmcli con down vpn > /dev/null && notify-send -u normal -t 2000 "VPN is off"
+    nmcli con down vpn > /dev/null && notify-send -u low -t 2000 "VPN is off"
   else
-    nmcli con up vpn > /dev/null && notify-send -u normal -t 2000 "VPN is on"
+    nmcli con up vpn > /dev/null && notify-send -u low -t 2000 "VPN is on"
   fi
 }
 
